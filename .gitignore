@@ -1,0 +1,25 @@
+
+# dependencies
+/graphgraph-fe/node_modules
+/graphgraph-fe/.pnp
+/graphgraph-fe/.pnp.js
+
+# testing
+/graphgraph-fe/coverage
+
+# production
+/graphgraph-fe/build
+
+# misc
+/graphgraph-fe/DS_Store
+/graphgraph-fe/env.local
+/graphgraph-fe/env.development.local
+/graphgraph-fe/env.test.local
+/graphgraph-fe/.env.production.local
+
+/graphgraph-fe/npm-debug.log*
+/graphgraph-fe/yarn-debug.log*
+/graphgraph-fe/yarn-error.log*
+
+/.idea
+/target

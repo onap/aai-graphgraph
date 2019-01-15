@@ -1,0 +1,29 @@
+/* workaround for a bootstrap bug that keeps the last pushed dropdown active after selection */
+.btn-default {
+    color: #333 !important;
+    background-color: #fff !important;
+    border-color: #ccc !important;
+}
+
+.schemas-dropdown{
+    width: 100px;
+}
+
+.node-dropdown{
+    width: 200px;
+}
+
+.source-dropdown-div{
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.startendnode-dropdown{
+    display: flex;
+}
+
+.graph-menu
+{
+    display: flex;
+    width: 80px !important;
+}
