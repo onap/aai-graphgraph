@@ -1,8 +1,14 @@
 package org.onap.aai.graphgraph.dto;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class Edge {
+
+    public static String TYPE_PARENT = "parent";
+    public static String TYPE_EDGE_RULE = "edgerule";
+
     private String source;
     private String target;
     private String type;
@@ -27,6 +33,10 @@ public class Edge {
         return source;
     }
 
+    public List<NodeName> getNodeNames() {
+        return Arrays.asList(new NodeName(source), new NodeName(target));
+    }
+
     public void setSource(String source) {
         this.source = source;
     }
@@ -45,5 +55,34 @@ public class Edge {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Edge edge = (Edge) o;
+
+        if (!source.equals(edge.source)) {
+            return false;
+        }
+        if (!target.equals(edge.target)) {
+            return false;
+        }
+        return type.equals(edge.type);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = source.hashCode();
+        result = 31 * result + target.hashCode();
+        result = 31 * result + type.hashCode();
+        return result;
     }
 }

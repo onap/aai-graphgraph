@@ -188,9 +188,10 @@ var prepareLinks = function (nodes, links) {
 }
 
 var createSimulation = function (nodes, links) {
+    console.log('nodes', nodes, 'links', links, 'd3', d3)
   return d3.forceSimulation(nodes)
-    .force('charge', d3.forceManyBody().strength(-1800))
-    .force('link', d3.forceLink(links).distance(400).strength(1).iterations(100))
+    .force('charge', d3.forceManyBody().strength(-50180))
+    .force('link', d3.forceLink(links).distance(1800).strength(1).iterations(100))
     .force('x', d3.forceX())
     .force('y', d3.forceY())
     .stop()

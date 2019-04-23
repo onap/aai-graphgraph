@@ -101,9 +101,11 @@ class App extends React.Component {
   }
 
   render () {
+      let n = _.invert(this.state.nodeStates)[constants.CLICKED],
+          selectedNode = _.isUndefined(n) ? '' : n 
     return (
       <div className="App">
-        <GraphSettingsMenu graphData={this.graphdata}/>
+        <GraphSettingsMenu graphData={this.graphdata} nodePropsLoader={this.loadNodeProperties} selectedNode={selectedNode}/>
         <div className='graph-area'>
           <Graph graphFingerprint={this.state.graphFingerprint} edgePropsLoader={this.loadEdgeProperties} selectedEdge={this.state.selectedEdge} nodes={this.state.graph.nodeNames} edges={this.state.graph.edges} nodeStates={this.state.nodeStates} nodePropsLoader={this.loadNodeProperties}/>
         </div>

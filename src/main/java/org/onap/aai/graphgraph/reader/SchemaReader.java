@@ -11,6 +11,6 @@ public interface SchemaReader {
     List<NodeName> getAllVertexNames();
     List<Property> getVertexProperties(String nodeName);
     List<Property> getEdgeProperties(String fromNode, String toNode);
-    Graph getGraph(String initialNode, int parentHops, int cousingHops, int childHops);
+    Graph getGraph(String initialNode, int parentHops, int cousinHops, int childHops);
     Graph getGraph(String fromNode, String toNode);
 }
