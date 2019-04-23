@@ -69,6 +69,10 @@ class App extends React.Component {
     s['selectedSchema'] = selectedGraphSchema
     s['graphFingerprint'] = graphFingerprint
     s['graph'] = data
+    // TODO this should be handled more gracefully ...
+    if (_.isEmpty(data.edges)) {
+      alert('The graph has no edges, nothing to display')
+    }
     s['displayedProperties'] = data.startNodeProperties
     if (_.isArray(data.paths) && !_.isEmpty(data.paths)) {
       s['paths'] = data.paths
@@ -101,9 +105,12 @@ class App extends React.Component {
   }
 
   render () {
+    let n = _.invert(this.state.nodeStates)[constants.CLICKED]
+
+    let selectedNode = _.isUndefined(n) ? '' : n
     return (
       <div className="App">
-        <GraphSettingsMenu graphData={this.graphdata}/>
+        <GraphSettingsMenu graphData={this.graphdata} nodePropsLoader={this.loadNodeProperties} selectedNode={selectedNode}/>
         <div className='graph-area'>
           <Graph graphFingerprint={this.state.graphFingerprint} edgePropsLoader={this.loadEdgeProperties} selectedEdge={this.state.selectedEdge} nodes={this.state.graph.nodeNames} edges={this.state.graph.edges} nodeStates={this.state.nodeStates} nodePropsLoader={this.loadNodeProperties}/>
         </div>

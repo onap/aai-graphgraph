@@ -16,7 +16,7 @@ class GraphSettingsMenu extends React.Component {
         <Navbar.Collapse>
           <Navbar.Form pullLeft>
             <FormGroup>
-              <GraphSettings graphData={this.props.graphData}/>
+              <GraphSettings selectedNode={this.props.selectedNode} graphData={this.props.graphData} nodePropsLoader={this.props.nodePropsLoader} />
             </FormGroup>{' '}
           </Navbar.Form>
         </Navbar.Collapse>

@@ -7,7 +7,7 @@ var createNumInput = function (label, callback, current) {
   return (
     <div>
       <Label>{label}</Label>
-      <NumericInput onChange={callback} min={0} max={500} value={current} className="hops-input-field" />
+      <NumericInput onChange={callback} min={1} max={500} value={current} className="hops-input-field" />
     </div>
   )
 }
@@ -34,7 +34,6 @@ class GraphHops extends React.Component {
     var s = this.state
     s[hopsName] = num
     this.setState(s)
-
     this.props.updateHops(this.state.parentHops, this.state.cousinHops, this.state.childHops)
   }
 
@@ -51,12 +50,11 @@ class GraphHops extends React.Component {
   }
 
   render () {
+    // {createNumInput('cousin hops', this.onChangeCousin, this.state.cousinHops)}
     return (
       <div className="hops-input">
         {createNumInput('parent hops', this.onChangeParent, this.state.parentHops)}
-        {createNumInput('cousin hops', this.onChangeCousin, this.state.cousinHops)}
         {createNumInput('child hops', this.onChangeChild, this.state.childHops)}
-
       </div>
     )
   }

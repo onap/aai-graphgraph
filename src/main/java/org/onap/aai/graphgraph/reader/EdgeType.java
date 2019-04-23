@@ -17,37 +17,22 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.aai.graphgraph;
+package org.onap.aai.graphgraph.reader;
 
-import java.util.LinkedList;
-import java.util.List;
-import org.onap.aai.graphgraph.reader.BasicSchemaReader;
-import org.onap.aai.graphgraph.reader.SchemaReader;
-import org.onap.aai.graphgraph.reader.SchemaRepository;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+public enum EdgeType {
+  EDGE_RULE("edgerule"), PARENT("parent"), CHILD("child");
 
-@Configuration
-@ComponentScan(basePackages = {
-    "org.onap.aai.config",
-    "org.onap.aai.setup",
-    "org.onap.aai.graphgraph"
-})
-public class Config {
+  private final String name;
 
-    @Value("${schema.version.list}")
-    String schemaVersions;
+  EdgeType(String s) {
+    name = s;
+  }
 
-    @Bean
-    SchemaRepository createSchemaRepository(){
-        List<SchemaReader> readers = new LinkedList<>();
-        for (String s : schemaVersions.split(",")) {
-            readers.add(new BasicSchemaReader(s));
-        }
-        return new SchemaRepository(readers);
-    }
+  public String getTypeName() {
+    return this.name;
+  }
+
+  public boolean isType(String o){
+    return name.equals(o);
+  }
 }
-
-

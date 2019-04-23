@@ -7,12 +7,12 @@ export function nodeNames (schema) {
   return `http://localhost:8080/schemas/${schema}/nodes`
 }
 
-export function basicGraph (schema, node, parentHops, cousinHops, childHops) {
-  return `http://localhost:8080/schemas/${schema}/graph/basic?node=${node}&parentHops=${parentHops}&cousinHops=${cousinHops}&childHops=${childHops}`
+export function basicGraph (schema, node, parentHops, cousinHops, childHops, edgeFilter) {
+  return `http://localhost:8080/schemas/${schema}/graph/basic?node=${node}&parentHops=${parentHops}&cousinHops=${cousinHops}&childHops=${childHops}&edgeFilter=${edgeFilter}`
 }
 
-export function pathGraph (schema, fromNode, toNode) {
-  return `http://localhost:8080/schemas/${schema}/graph/paths?fromNode=${fromNode}&toNode=${toNode}`
+export function pathGraph (schema, fromNode, toNode, edgeFilter) {
+  return `http://localhost:8080/schemas/${schema}/graph/paths?fromNode=${fromNode}&toNode=${toNode}&edgeFilter=${edgeFilter}`
 }
 
 export function nodeProperty (schema, node) {

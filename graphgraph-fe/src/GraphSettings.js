@@ -13,7 +13,9 @@ var emptyState = {
     edges: []
   },
   showHops: false,
+  enableDestinationNode: false,
   toNode: '',
+  edgeFilter: 'Edgerules',
   hops: {
     parents: 1,
     cousin: 1,
@@ -25,30 +27,40 @@ var emptyState = {
 class GraphSettings extends React.Component {
   constructor (props, context) {
     super(props, context)
-
     this.onChangeStartNode = this.onChangeStartNode.bind(this)
+    this.onSelectNode = this.onSelectNode.bind(this)
     this.selectSchema = this.selectSchema.bind(this)
     this.onChangeToNode = this.onChangeToNode.bind(this)
     this.loadInitialGraph = this.loadInitialGraph.bind(this)
     this.updateHops = this.updateHops.bind(this)
+    this.changeEdgeFilter = this.changeEdgeFilter.bind(this)
     this.graphFingerprint = this.graphFingerprint.bind(this)
     this.state = emptyState
   }
   // this serves as a config 'fingerprint' to know if the d3 visualisation should be redrawn from scratch or just updated
-  graphFingerprint (schema, from, to, parents, cousin, child) {
-    return `${schema}:${from}:${to}:${parents}:${cousin}:${child}`
+  graphFingerprint (schema, from, to, parents, cousin, child, edgeFilter) {
+    return `${schema}:${from}:${to}:${parents}:${cousin}:${child}:${edgeFilter}`
   }
 
-  loadInitialGraph (startNode, endNode, parentHops, cousinHops, childHops) {
-    let requestUri = endNode === 'none' ? basicGraph(this.state.selectedSchema, startNode, 0, 0, 1) : pathGraph(this.state.selectedSchema, startNode, endNode)
+  loadInitialGraph (startNode, endNode, parentHops, cousinHops, childHops, edgeFilter) {
+    if (this.state.selectedSchema === '' || startNode === 'none') {
+      return
+    }
+    if (startNode === 'all') {
+      endNode = 'none'
+    }
+
+    let requestUri = endNode === 'none'
+      ? basicGraph(this.state.selectedSchema, startNode, parentHops, cousinHops, childHops, edgeFilter) : pathGraph(this.state.selectedSchema, startNode, endNode, edgeFilter)
 
     fetch(requestUri)
       .then(response => response.json())
       .then(g => {
         let schema = this.state.selectedSchema
 
-        let f = this.graphFingerprint(schema, startNode, endNode, parentHops, cousinHops, childHops)
+        let f = this.graphFingerprint(schema, startNode, endNode, parentHops, cousinHops, childHops, edgeFilter)
         this.props.graphData(g, this.state.selectedSchema, f)
+        return g
       })
       .then(g => {
         var s = this.state
@@ -58,8 +70,14 @@ class GraphSettings extends React.Component {
         s['fromNode'] = startNode
         s['toNode'] = endNode
         s['graph'] = g
-        s['showHops'] = endNode === 'none' && startNode !== 'none'
+        s['edgeFilter'] = edgeFilter
+        s['showHops'] = endNode === 'none' && startNode !== 'none' && startNode !== 'all'
+        s['enableDestinationNode'] = startNode !== 'none' && startNode !== 'all'
         this.setState(s)
+
+        if (startNode !== 'all') {
+          this.onSelectNode(startNode)
+        }
       })
   }
 
@@ -75,13 +93,25 @@ class GraphSettings extends React.Component {
       })
   }
 
+  changeEdgeFilter (edgeFilter) {
+    this.loadInitialGraph(
+      this.state.fromNode,
+      this.state.toNode,
+      this.state.hops.parents,
+      this.state.hops.cousin,
+      this.state.hops.child,
+      edgeFilter
+    )
+  }
+
   updateHops (parentHops, cousinHops, childHops) {
     this.loadInitialGraph(
       this.state.fromNode,
       this.state.toNode,
       parentHops,
       cousinHops,
-      childHops)
+      childHops,
+      this.state.edgeFilter)
   }
 
   onChangeToNode (eventKey) {
@@ -89,14 +119,20 @@ class GraphSettings extends React.Component {
       eventKey,
       this.state.hops.parents,
       this.state.hops.cousin,
-      this.state.hops.child)
+      this.state.hops.child,
+      this.state.edgeFilter)
+  }
+
+  onSelectNode (eventKey) {
+    this.props.nodePropsLoader(eventKey)
   }
 
   onChangeStartNode (eventKey) {
     this.loadInitialGraph(eventKey, this.state.toNode,
       this.state.hops.parents,
       this.state.hops.cousin,
-      this.state.hops.child)
+      this.state.hops.child,
+      this.state.edgeFilter)
   }
 
   componentDidMount () {
@@ -113,14 +149,21 @@ class GraphSettings extends React.Component {
     var schemas = _.map(this.state.schemas, (x, k) => <MenuItem key={k} eventKey={x}>{x}</MenuItem>)
 
     var items = _.map(this.state.nodeNames, (x, k) => <MenuItem key={k} eventKey={x.id}>{x.id}</MenuItem>)
+    let sortedNames = _.sortBy(this.state.graph.nodeNames, 'id')
+    var currentNodeNames = _.map(sortedNames, (x, k) => <MenuItem key={k} eventKey={x.id}>{x.id}</MenuItem>)
 
     var fromItems = items.slice()
     fromItems.unshift(<MenuItem key='divider' divider />)
-    fromItems.unshift(<MenuItem key='none' eventKey='none'>none</MenuItem>)
+    fromItems.unshift(<MenuItem key='all' eventKey='all'>all</MenuItem>)
 
     items.unshift(<MenuItem key='anotherdivider' divider />)
     items.unshift(<MenuItem key='none' eventKey='none'>none</MenuItem>)
 
+    let edgeFilterItems = [
+      <MenuItem key='Edgerules' eventKey='Edgerules'>Edgerules</MenuItem>,
+      <MenuItem key='Parents' eventKey='Parents'>Parent-child (OXM structure)</MenuItem>,
+      <MenuItem key='Both' eventKey='Both'>Both</MenuItem>
+    ]
     return (
       <div>
         <div className="graph-menu">
@@ -139,11 +182,23 @@ class GraphSettings extends React.Component {
             </div>
             <div>
               <Label>Destination Node</Label>
-              <DropdownButton className="node-dropdown" onSelect={this.onChangeToNode} id="namesTo" title={this.state.toNode}>
+              <DropdownButton disabled={!this.state.enableDestinationNode} className="node-dropdown" onSelect={this.onChangeToNode} id="namesTo" title={this.state.toNode}>
                 {items}
               </DropdownButton>
-
             </div>
+            <div className="source-dropdown-div">
+              <Label>Edge filter</Label>
+              <DropdownButton className="node-dropdown" onSelect={this.changeEdgeFilter} id="filterEdge" title={this.state.edgeFilter}>
+                {edgeFilterItems}
+              </DropdownButton>
+            </div>
+            <div className="source-dropdown-div">
+              <Label>Selected Node</Label>
+              <DropdownButton className="node-dropdown" onSelect={this.onSelectNode} id="selectedNode" title={this.props.selectedNode}>
+                {currentNodeNames}
+              </DropdownButton>
+            </div>
+
             <Popup isDisabled={!this.state.showHops} parentHops={this.state.hops.parents} childHops={this.state.hops.child} cousinHops={this.state.hops.cousin} updateHops={this.updateHops}/>
           </div>
 
