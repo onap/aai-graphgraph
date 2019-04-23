@@ -33,7 +33,7 @@ var mouseOverEdge = function (edge, div) {
 
 var mouseOutEdge = function (edge, div) {
   div.transition()
-    .duration(4000)
+    .duration(6000)
     .style('opacity', 0)
 }
 
@@ -99,9 +99,54 @@ var addNodeLabels = function (nodes, g) {
     .attr('fill', NODE_LABEL_COLOR)
     .attr('font-size', '32px')
     .text(d => d.id)
+    .on('mouseenter', onNodeLabelMouseOver)
+    .on('mouseout', onNodeLabelMouseOut)
 }
 
 var addLinks = function (links, g, div, edgePropsLoader) {
+  let ss = _.filter(links, l => l.source.id === l.target.id)
+
+  let selfLinks = _.isUndefined(ss) ? [] : ss
+
+  g.selectAll('ellipse')
+    .data(selfLinks)
+    .enter().append('ellipse')
+    .attr('fill-opacity', 0)
+    .attr('rx', d => 100)
+    .attr('ry', d => 16)
+    .attr('cx', d => d.target.x + 80)
+    .attr('cy', d => d.target.y)
+    .style('stroke', NODE_BORDER_COLOR)
+    .attr('stroke-width', 5)
+    .on('click', edge => edgePropsLoader(edge.source.id, edge.target.id))
+    .on('mouseenter', function (edge) {
+      mouseOverEdge(edge, div)
+      d3.select(this)
+        .transition()
+        .attr('oldStroke', EDGE_NORMAL_COLOR)
+        .duration(10)
+        .style('stroke', EDGE_MOUSE_OVER_COLOR)
+    })
+    .on('mouseleave', function (edge) {
+      mouseOutEdge(edge, div)
+      var strokeColor = d3.select(this).attr('oldStroke')
+      d3.select(this)
+        .transition()
+        .duration(300)
+        .style('stroke', strokeColor)
+    })
+
+  g.selectAll('.edgelooplabel')
+    .data(selfLinks)
+    .enter()
+    .append('text')
+    .attr('x', d => d.source.x + 35)
+    .attr('y', d => d.source.y + 50)
+    .attr('class', 'edgelooplabel')
+    .attr('fill', NODE_LABEL_COLOR)
+    .attr('font-size', '22px')
+    .text(d => d.type)
+
   g.selectAll('line')
     .data(links)
     .enter().append('line')
@@ -147,10 +192,12 @@ var addMarkers = function (g, svg) {
     .attr('fill', EDGE_NORMAL_COLOR)
     .attr('stroke', EDGE_NORMAL_COLOR)
 
-  var zoom_handler = d3.zoom()
+  var zoomHandler = d3.zoom()
     .on('zoom', _ => g.attr('transform', d3.event.transform))
 
-  zoom_handler(svg)
+  zoomHandler(svg)
+  zoomHandler.translateTo(svg, -7000, -4000)
+  zoomHandler.scaleTo(svg, 0.08)
 }
 
 var drawGraph = function (nodes, links, g, simulation, svg, addNodes, edgePropsLoader) {
@@ -189,8 +236,9 @@ var prepareLinks = function (nodes, links) {
 
 var createSimulation = function (nodes, links) {
   return d3.forceSimulation(nodes)
-    .force('charge', d3.forceManyBody().strength(-1800))
-    .force('link', d3.forceLink(links).distance(400).strength(1).iterations(100))
+    .force('charge', d3.forceManyBody().strength(-201))
+    .force('link', d3.forceLink(links).distance(1200).strength(1).iterations(400))
+    .force('collision', d3.forceCollide().radius(d => 310))
     .force('x', d3.forceX())
     .force('y', d3.forceY())
     .stop()
@@ -198,11 +246,23 @@ var createSimulation = function (nodes, links) {
 
 var createSvg = function () {
   var svg = d3.select('#graph').append('svg').attr('height', '100%').attr('width', '100%')
-  var width = 100
-  var height = 100
-  var g = svg.append('g').attr('transform', `translate(${(300 + width / 10)}, ${height / 10})`)
+  var g = svg.append('g')
 
   return { 'g': g, 'svg': svg }
+}
+
+var onNodeLabelMouseOut = function () {
+  d3.select(this)
+    .transition()
+    .duration(600)
+    .attr('font-size', '32px')
+}
+
+var onNodeLabelMouseOver = function () {
+  d3.select(this)
+    .transition()
+    .duration(200)
+    .attr('font-size', '232px')
 }
 
 var onNodeMouseOver = function () {

@@ -4,9 +4,8 @@ import PathBreadCrumb from './PathBreadCrumb'
 import _ from 'underscore'
 import ReactBasicTable from 'react-basic-table'
 
-var generatePropertyTable = function (nodeProps) {
-  var columns = ['Property Name', 'Value']
-  var rows = _.map(nodeProps, path => {
+var getRows = function (nodeProps) {
+  return _.map(nodeProps, path => {
     return (
       [
         <span>{path.propertyName}</span>,
@@ -14,15 +13,20 @@ var generatePropertyTable = function (nodeProps) {
       ]
     )
   })
-
-  return (
-    <div className="datatable">
-      <ReactBasicTable pageSize={4} rows={rows} columns={columns} />
-    </div>
-  )
 }
 
 class GraphInfoMenu extends React.Component {
+  constructor (props) {
+    super(props)
+    this.basicTable = React.createRef()
+  }
+
+  // ReactBasicTable does not reset pagination after
+  // changing data, we need to do it manually
+  componentDidUpdate (prevProps) {
+    this.basicTable.current.setPage(1)
+  }
+
   render () {
     var paths = this.props.paths
     var callback = this.props.pathCallback
@@ -34,8 +38,8 @@ class GraphInfoMenu extends React.Component {
           <p className='path-heading'>Paths</p>
           {breadcrumbs}
         </div>
-        <div className="kv-table">
-          {generatePropertyTable(this.props.nodeProperties)}
+        <div className="kv-table datatable">
+          <ReactBasicTable ref={this.basicTable} pageSize={3} rows={getRows(this.props.nodeProperties)} columns={['Property Name', 'Value']} />
         </div>
       </div>
     )

@@ -19,18 +19,53 @@
  */
 package org.onap.aai.graphgraph.reader;
 
-import org.onap.aai.graphgraph.dto.Graph;
-import org.onap.aai.graphgraph.dto.NodeName;
-import org.onap.aai.graphgraph.dto.Property;
+import org.jgrapht.graph.DefaultEdge;
 
-import java.util.List;
+public class MetadataEdge extends DefaultEdge {
 
-public interface SchemaReader {
-    String getSchemaName();
-    List<NodeName> getAllVertexNames();
-    List<Property> getVertexProperties(String nodeName);
-    List<Property> getEdgeProperties(String fromNode, String toNode, String type);
-    Graph getGraph(String initialNode, int parentHops, int cousinHops, int childHops,
-        String edgeFilter);
-    Graph getGraph(String fromNode, String toNode, String edgeFilter);
+  private final String type;
+  private final String target;
+  private final String source;
+  private final String label;
+
+  MetadataEdge(String type, String source, String target) {
+    this.source = source;
+    this.target = target;
+    this.type = type;
+    this.label = "";
+  }
+
+  MetadataEdge(String type, String target, String source, String label) {
+    this.type = type;
+    this.target = target;
+    this.source = source;
+    this.label = label;
+  }
+
+  public String getLabel() {
+    return label;
+  }
+
+  @Override
+  public String getTarget() {
+    return target;
+  }
+
+  @Override
+  public String getSource() {
+    return source;
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  @Override
+  public String toString() {
+    return "MetadataEdge{" +
+        "type='" + type + '\'' +
+        ", target='" + target + '\'' +
+        ", source='" + source + '\'' +
+        '}';
+  }
 }

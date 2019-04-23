@@ -1,5 +1,6 @@
 package org.onap.aai.graphgraph.dto;
 
+import java.util.Collections;
 import java.util.List;
 
 public class Graph {
@@ -13,6 +14,11 @@ public class Graph {
         this.edges = edges;
         this.paths = pathsList;
         this.startNodeProperties = startNodeProperties;
+    }
+
+    public static Graph emptyGraph() {
+        return new Graph(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
+            Collections.emptyList());
     }
 
     public List<Property> getStartNodeProperties() {
