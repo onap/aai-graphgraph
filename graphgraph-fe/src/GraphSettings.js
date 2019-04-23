@@ -13,6 +13,7 @@ var emptyState = {
     edges: []
   },
   showHops: false,
+  enableDestinationNode: false,
   toNode: '',
   hops: {
     parents: 1,
@@ -25,8 +26,8 @@ var emptyState = {
 class GraphSettings extends React.Component {
   constructor (props, context) {
     super(props, context)
-
     this.onChangeStartNode = this.onChangeStartNode.bind(this)
+    this.onSelectNode = this.onSelectNode.bind(this)
     this.selectSchema = this.selectSchema.bind(this)
     this.onChangeToNode = this.onChangeToNode.bind(this)
     this.loadInitialGraph = this.loadInitialGraph.bind(this)
@@ -40,7 +41,7 @@ class GraphSettings extends React.Component {
   }
 
   loadInitialGraph (startNode, endNode, parentHops, cousinHops, childHops) {
-    let requestUri = endNode === 'none' ? basicGraph(this.state.selectedSchema, startNode, 0, 0, 1) : pathGraph(this.state.selectedSchema, startNode, endNode)
+    let requestUri = endNode === 'none' ? basicGraph(this.state.selectedSchema, startNode, parentHops, cousinHops, childHops) : pathGraph(this.state.selectedSchema, startNode, endNode)
 
     fetch(requestUri)
       .then(response => response.json())
@@ -49,6 +50,7 @@ class GraphSettings extends React.Component {
 
         let f = this.graphFingerprint(schema, startNode, endNode, parentHops, cousinHops, childHops)
         this.props.graphData(g, this.state.selectedSchema, f)
+          return g
       })
       .then(g => {
         var s = this.state
@@ -58,8 +60,13 @@ class GraphSettings extends React.Component {
         s['fromNode'] = startNode
         s['toNode'] = endNode
         s['graph'] = g
-        s['showHops'] = endNode === 'none' && startNode !== 'none'
+        s['showHops'] = endNode === 'none' && startNode !== 'none' && startNode !== 'all'
+        s['enableDestinationNode'] = startNode !== 'none' && startNode !== 'all'
         this.setState(s)
+
+        if (startNode !== 'all'){  
+          this.onSelectNode(startNode);
+        }
       })
   }
 
@@ -92,6 +99,11 @@ class GraphSettings extends React.Component {
       this.state.hops.child)
   }
 
+
+  onSelectNode(eventKey) {
+    this.props.nodePropsLoader(eventKey)
+  }
+
   onChangeStartNode (eventKey) {
     this.loadInitialGraph(eventKey, this.state.toNode,
       this.state.hops.parents,
@@ -113,10 +125,12 @@ class GraphSettings extends React.Component {
     var schemas = _.map(this.state.schemas, (x, k) => <MenuItem key={k} eventKey={x}>{x}</MenuItem>)
 
     var items = _.map(this.state.nodeNames, (x, k) => <MenuItem key={k} eventKey={x.id}>{x.id}</MenuItem>)
+    let sortedNames = _.sortBy(this.state.graph.nodeNames, 'id')
+    var currentNodeNames = _.map(sortedNames, (x, k) => <MenuItem key={k} eventKey={x.id}>{x.id}</MenuItem>)
 
     var fromItems = items.slice()
     fromItems.unshift(<MenuItem key='divider' divider />)
-    fromItems.unshift(<MenuItem key='none' eventKey='none'>none</MenuItem>)
+    fromItems.unshift(<MenuItem key='all' eventKey='all'>all</MenuItem>)
 
     items.unshift(<MenuItem key='anotherdivider' divider />)
     items.unshift(<MenuItem key='none' eventKey='none'>none</MenuItem>)
@@ -139,11 +153,21 @@ class GraphSettings extends React.Component {
             </div>
             <div>
               <Label>Destination Node</Label>
-              <DropdownButton className="node-dropdown" onSelect={this.onChangeToNode} id="namesTo" title={this.state.toNode}>
+              <DropdownButton disabled={!this.state.enableDestinationNode} className="node-dropdown" onSelect={this.onChangeToNode} id="namesTo" title={this.state.toNode}>
                 {items}
               </DropdownButton>
 
             </div>
+
+            <div className="source-dropdown-div">
+              <Label>Selected Node</Label>
+              <DropdownButton className="node-dropdown" onSelect={this.onSelectNode} id="selectedNode" title={this.props.selectedNode}>
+                {currentNodeNames}
+              </DropdownButton>
+            </div>
+
+
+
             <Popup isDisabled={!this.state.showHops} parentHops={this.state.hops.parents} childHops={this.state.hops.child} cousinHops={this.state.hops.cousin} updateHops={this.updateHops}/>
           </div>
 

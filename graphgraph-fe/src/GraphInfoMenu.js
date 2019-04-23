@@ -17,7 +17,7 @@ var generatePropertyTable = function (nodeProps) {
 
   return (
     <div className="datatable">
-      <ReactBasicTable pageSize={4} rows={rows} columns={columns} />
+      <ReactBasicTable pageSize={3} rows={rows} columns={columns} />
     </div>
   )
 }
