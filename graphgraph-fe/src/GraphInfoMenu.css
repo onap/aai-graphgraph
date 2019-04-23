@@ -1,7 +1,7 @@
 .node-property-list {
     float:top;
     display: flex;
-    height: 250px;
+    height: 200px;
     width: 100%;
 }
 
@@ -12,7 +12,7 @@
 .fixed-height-container {
     overflow: scroll;
     float:top;
-    height: 250px;
+    height: 200px;
     width:40%; 
     padding:3px; 
     background:white;
