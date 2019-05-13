@@ -1,0 +1,23 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+  <id>distribution</id>
+  <formats>
+    <format>jar</format>
+  </formats>
+  <fileSets>
+    <fileSet>
+      <directory>src/main/resources/etc/auth</directory>
+      <outputDirectory>/etc/auth</outputDirectory>
+      <filtered>false</filtered>
+    </fileSet>
+  </fileSets>
+
+<files>
+  <file>
+      <source>target/${project.artifactId}-${project.version}.${project.packaging}</source>
+      <outputDirectory>/</outputDirectory>
+      <filtered>false</filtered>
+    </file>
+</files>
+</assembly>
