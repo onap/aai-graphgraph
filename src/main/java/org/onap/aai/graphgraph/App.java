@@ -25,6 +25,7 @@ import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.introspection.MoxyLoader;
 import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.nodes.NodeIngestor;
+import org.onap.aai.restclient.PropertyPasswordConfiguration;
 import org.onap.aai.setup.SchemaVersion;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -47,7 +48,9 @@ public class App{
     }
 
     public static void main( String[] args ) {
-        ConfigurableApplicationContext context = SpringApplication.run(App.class, args);
+        SpringApplication app  = new SpringApplication(App.class);
+        app.addInitializers(new PropertyPasswordConfiguration());
+        ConfigurableApplicationContext context = app.run(args);
         loadSchemes(context);
         edgeIngestor = (EdgeIngestor) context.getBean("edgeIngestor");
     }
