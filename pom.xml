@@ -101,7 +101,7 @@
               <verbose>true</verbose>
               <images>
                 <image>
-                  <name>graphgraph:${project.version}</name>
+                  <name>aai-graphgraph:${project.version}</name>
                   <build>
                     <from>aaionap/aai-common:1.3.0</from>
                     <entryPoint>
