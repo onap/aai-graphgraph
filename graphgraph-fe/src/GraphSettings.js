@@ -44,6 +44,9 @@ class GraphSettings extends React.Component {
 
   loadInitialGraph (startNode, endNode, parentHops, cousinHops, childHops, edgeFilter) {
     if (this.state.selectedSchema === '' || startNode === 'none') {
+      var s = this.state
+      s['edgeFilter'] = edgeFilter
+      this.setState(s)
       return
     }
     if (startNode === 'all') {
@@ -71,7 +74,7 @@ class GraphSettings extends React.Component {
         s['toNode'] = endNode
         s['graph'] = g
         s['edgeFilter'] = edgeFilter
-        s['showHops'] = endNode === 'none' && startNode !== 'none' && startNode !== 'all'
+        s['showHops'] = endNode === 'none' && startNode !== 'none' && startNode !== 'all' && edgeFilter !== 'Edgerules'
         s['enableDestinationNode'] = startNode !== 'none' && startNode !== 'all'
         this.setState(s)
 
@@ -84,7 +87,7 @@ class GraphSettings extends React.Component {
   selectSchema (schema) {
     var s = this.state
     s['selectedSchema'] = schema
-    fetch(nodeNames(schema))
+    fetch(nodeNames(schema, s['edgeFilter']))
       .then(response => response.json())
       .then(nodeNames => {
         s['fromNode'] = s['toNode'] = 'none'
@@ -94,6 +97,15 @@ class GraphSettings extends React.Component {
   }
 
   changeEdgeFilter (edgeFilter) {
+    fetch(nodeNames(this.state.selectedSchema, edgeFilter))
+      .then(response => response.json())
+      .then(nodeNames => {
+        let s = this.state
+        s['edgeFilter'] = edgeFilter
+        s['fromNode'] = s['toNode'] = 'none'
+        s['nodeNames'] = nodeNames
+        this.setState(s)
+      })
     this.loadInitialGraph(
       this.state.fromNode,
       this.state.toNode,

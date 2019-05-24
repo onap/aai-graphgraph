@@ -20,7 +20,7 @@
 package org.onap.aai.graphgraph.reader;
 
 import com.google.common.collect.Multimap;
-import java.util.AbstractMap;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -32,7 +32,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.FloydWarshallShortestPaths;
@@ -43,8 +42,10 @@ import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.graphgraph.App;
 import org.onap.aai.graphgraph.dto.Edge;
 import org.onap.aai.graphgraph.dto.NodeName;
+import org.onap.aai.graphgraph.dto.NodeProperty;
 import org.onap.aai.graphgraph.dto.Property;
 import org.onap.aai.introspection.Introspector;
+import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.setup.SchemaVersion;
 
 public class BasicSchemaReader implements SchemaReader {
@@ -135,44 +136,43 @@ public class BasicSchemaReader implements SchemaReader {
   }
 
   @Override
-  public List<NodeName> getAllVertexNames() {
+  public List<NodeName> getAllVertexNames(String edgeFilter) {
     init();
 
-    return allEntities.keySet().stream().sorted()
+    return createGraph(isParentChildFilter(edgeFilter), isEdgeRulesFilter(edgeFilter))
+        .edgeSet().stream().flatMap(e -> Arrays.asList(e.getSource(), e.getTarget()).stream())
+        .sorted()
+        .distinct()
         .map(NodeName::new).collect(
             Collectors.toList());
   }
 
   @Override
-  public List<Property> getVertexProperties(String nodeName) {
+  public List<NodeProperty> getVertexProperties(String nodeName) {
     init();
 
     if (!allEntities.containsKey(nodeName)) {
       return Collections.emptyList();
     }
 
-    Stream<Map.Entry<String, String>> incoming = graph.incomingEdgesOf(nodeName).stream()
-        .filter(e -> e.getType().equals(EdgeType.EDGE_RULE.getTypeName()))
-        .map(e -> new AbstractMap.SimpleEntry<>(e.getTarget(), e.getLabel()));
-    Stream<Map.Entry<String, String>> outgoing = graph.outgoingEdgesOf(nodeName).stream()
-        .map(e -> new AbstractMap.SimpleEntry<>(e.getSource(), e.getLabel()));
-
-    List<Property> neighbours = Stream.concat(incoming, outgoing)
-        .map(t -> new Property(
-            String.format("This node is in relationship %s to node %s", t.getValue(), t.getKey()),
-            String.format("%s/%s", t.getValue(), t.getKey())))
-        .distinct()
-        .sorted()
-        .collect(Collectors.toList());
-
-    List<Property> properties = allEntities.get(nodeName).getProperties().stream()
+    Introspector introspector = allEntities.get(nodeName);
+    List<String> properties = introspector.getProperties().stream()
         .filter(p -> !allEntities.containsKey(p))
-        .map(p -> new Property(p, ""))
         .sorted()
         .collect(Collectors.toList());
 
-    properties.addAll(neighbours);
-    return properties;
+    List<NodeProperty> result = properties.stream().map( p ->
+    new NodeProperty(
+          p,
+          introspector.getPropertyMetadata(p)
+              .getOrDefault(PropertyMetadata.DESCRIPTION,"no description available"),
+          "I dont know", //TODO how to get this information????
+          introspector.getAllKeys().contains(p),
+          introspector.getIndexedProperties().contains(p),
+          introspector.getRequiredProperties().contains(p))
+    ).collect(Collectors.toList());
+
+    return result;
   }
 
   @Override

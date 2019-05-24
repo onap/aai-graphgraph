@@ -21,6 +21,7 @@ package org.onap.aai.graphgraph;
 
 import org.onap.aai.graphgraph.dto.Graph;
 import org.onap.aai.graphgraph.dto.NodeName;
+import org.onap.aai.graphgraph.dto.NodeProperty;
 import org.onap.aai.graphgraph.dto.Property;
 import org.onap.aai.graphgraph.reader.SchemaRepository;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,12 +46,13 @@ public class SchemaResource {
 
 
     @RequestMapping("/schemas/{schema}/nodes")
-    public List<NodeName> loadVertexNames(@PathVariable("schema") String schemaName)  {
-        return repository.getSchemaReader(schemaName).getAllVertexNames();
+    public List<NodeName> loadVertexNames(@PathVariable("schema") String schemaName,
+        @RequestParam("edgeFilter") String edgeFilter)  {
+        return repository.getSchemaReader(schemaName).getAllVertexNames(edgeFilter);
     }
 
     @RequestMapping("/schemas/{schema}/nodes/{node}")
-    public List<Property> loadProperties(@PathVariable("schema") String schemaName, @PathVariable("node") String node) {
+    public List<NodeProperty> loadProperties(@PathVariable("schema") String schemaName, @PathVariable("node") String node) {
         return repository.getSchemaReader(schemaName).getVertexProperties(node);
     }
 

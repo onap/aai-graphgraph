@@ -34,4 +34,11 @@ public class NodeName {
     public int hashCode() {
         return id.hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "NodeName{" +
+            "id='" + id + '\'' +
+            '}';
+    }
 }

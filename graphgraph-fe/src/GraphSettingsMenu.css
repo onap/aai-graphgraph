@@ -3,4 +3,10 @@
 margin-bottom: 0px;
 }
 
+.navbar-adjust .container {
+margin-left: 0;    
+}
 
+.navbar-adjust .container .navbar-header {
+margin-right: 250px;
+}

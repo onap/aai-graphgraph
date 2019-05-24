@@ -2,29 +2,12 @@ import React from 'react'
 import './GraphInfoMenu.css'
 import PathBreadCrumb from './PathBreadCrumb'
 import _ from 'underscore'
-import ReactBasicTable from 'react-basic-table'
-
-var getRows = function (nodeProps) {
-  return _.map(nodeProps, path => {
-    return (
-      [
-        <span>{path.propertyName}</span>,
-        <span>{path.propertyValue}</span>
-      ]
-    )
-  })
-}
+import ReactTable from "react-table";
+import "react-table/react-table.css";
 
 class GraphInfoMenu extends React.Component {
   constructor (props) {
     super(props)
-    this.basicTable = React.createRef()
-  }
-
-  // ReactBasicTable does not reset pagination after
-  // changing data, we need to do it manually
-  componentDidUpdate (prevProps) {
-    this.basicTable.current.setPage(1)
   }
 
   render () {
@@ -39,7 +22,40 @@ class GraphInfoMenu extends React.Component {
           {breadcrumbs}
         </div>
         <div className="kv-table datatable">
-          <ReactBasicTable ref={this.basicTable} pageSize={3} rows={getRows(this.props.nodeProperties)} columns={['Property Name', 'Value']} />
+          <ReactTable pageSizeOptions={[4, 25]} data={this.props.nodeProperties} 
+		columns={[
+            {
+              Header: "Attribute",
+              accessor: "propertyName",
+              minWidth: 50
+            },
+            {
+              Header: "Description",
+              accessor: "description",
+              minWidth: 300
+            },
+            {
+              id: "Key",
+              Header: "Key",
+              accessor: p => p.key ? "yes" : "",
+              minWidth: 30
+            },
+            {
+              id: "Index",
+              Header: "Index",
+              accessor: p => p.index ? "yes" : "",
+              minWidth: 30
+            },
+            {
+              id: "Required",
+              Header: "Required",
+              accessor: p => p.required ? "yes" : "",
+              minWidth: 30
+            }
+          ]}
+          defaultPageSize={4}
+          className="-striped -highlight"
+        />
         </div>
       </div>
     )

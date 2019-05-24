@@ -7,9 +7,9 @@ public class Graph {
     private List<NodeName> nodeNames;
     private List<Edge> edges;
     private List<List<NodeName>> paths;
-    private List <Property> startNodeProperties;
+    private List<NodeProperty> startNodeProperties;
 
-    public Graph(List<NodeName> nodeNames, List<Edge> edges, List<List<NodeName>> pathsList, List <Property> startNodeProperties) {
+    public Graph(List<NodeName> nodeNames, List<Edge> edges, List<List<NodeName>> pathsList, List<NodeProperty> startNodeProperties) {
         this.nodeNames = nodeNames;
         this.edges = edges;
         this.paths = pathsList;
@@ -21,11 +21,11 @@ public class Graph {
             Collections.emptyList());
     }
 
-    public List<Property> getStartNodeProperties() {
+    public List<NodeProperty> getStartNodeProperties() {
         return startNodeProperties;
     }
 
-    public void setStartNodeProperties(List<Property> startNodeProperties) {
+    public void setStartNodeProperties(List<NodeProperty> startNodeProperties) {
         this.startNodeProperties = startNodeProperties;
     }
 

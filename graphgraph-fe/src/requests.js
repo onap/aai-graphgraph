@@ -3,8 +3,8 @@ export function schemas () {
   return 'http://localhost:8080/schemas'
 }
 
-export function nodeNames (schema) {
-  return `http://localhost:8080/schemas/${schema}/nodes`
+export function nodeNames (schema, edgeFilter) {
+  return `http://localhost:8080/schemas/${schema}/nodes?edgeFilter=${edgeFilter}`
 }
 
 export function basicGraph (schema, node, parentHops, cousinHops, childHops, edgeFilter) {
