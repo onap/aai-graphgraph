@@ -6,7 +6,7 @@
 
   <groupId>org.onap.aai.graphgraph</groupId>
   <artifactId>graphgraph</artifactId>
-  <version>1.0</version>
+  <version>1.5</version>
 
   <properties>
     <nexusproxy>https://nexus.onap.org</nexusproxy>
