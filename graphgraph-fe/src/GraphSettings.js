@@ -74,7 +74,7 @@ class GraphSettings extends React.Component {
         s['toNode'] = endNode
         s['graph'] = g
         s['edgeFilter'] = edgeFilter
-        s['showHops'] = endNode === 'none' && startNode !== 'none' && startNode !== 'all' && edgeFilter !== 'Edgerules'
+        s['showHops'] = endNode === 'none' && startNode !== 'none' && startNode !== 'all' 
         s['enableDestinationNode'] = startNode !== 'none' && startNode !== 'all'
         this.setState(s)
 
@@ -174,7 +174,6 @@ class GraphSettings extends React.Component {
     let edgeFilterItems = [
       <MenuItem key='Edgerules' eventKey='Edgerules'>Edgerules</MenuItem>,
       <MenuItem key='Parents' eventKey='Parents'>Parent-child (OXM structure)</MenuItem>,
-      <MenuItem key='Both' eventKey='Both'>Both</MenuItem>
     ]
     return (
       <div>
@@ -211,7 +210,7 @@ class GraphSettings extends React.Component {
               </DropdownButton>
             </div>
 
-            <Popup isDisabled={!this.state.showHops} parentHops={this.state.hops.parents} childHops={this.state.hops.child} cousinHops={this.state.hops.cousin} updateHops={this.updateHops}/>
+            <Popup isDisabled={!this.state.showHops} edgeFilter={this.state.edgeFilter} parentHops={this.state.hops.parents} childHops={this.state.hops.child} cousinHops={this.state.hops.cousin} updateHops={this.updateHops}/>
           </div>
 
         </div>

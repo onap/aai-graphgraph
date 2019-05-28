@@ -166,7 +166,7 @@ public class BasicSchemaReader implements SchemaReader {
           p,
           introspector.getPropertyMetadata(p)
               .getOrDefault(PropertyMetadata.DESCRIPTION,"no description available"),
-          "I dont know", //TODO how to get this information????
+          "I don't know", //TODO how to get this information????
           introspector.getAllKeys().contains(p),
           introspector.getIndexedProperties().contains(p),
           introspector.getRequiredProperties().contains(p))
@@ -243,6 +243,7 @@ public class BasicSchemaReader implements SchemaReader {
     if (!"all".equals(initialNode)) {
       Set<String> subGraphVertices = computeNodes(initialNode, parentHops, EdgeType.CHILD.getTypeName());
       subGraphVertices.addAll(computeNodes(initialNode, childHops, EdgeType.PARENT.getTypeName()));
+      subGraphVertices.addAll(computeNodes(initialNode, cousinHops, EdgeType.EDGE_RULE.getTypeName()));
       edges = filterEdges(edges, subGraphVertices);
     }
 
@@ -251,11 +252,11 @@ public class BasicSchemaReader implements SchemaReader {
   }
 
   private boolean isParentChildFilter(String edgeFilter) {
-    return "Both".equals(edgeFilter) || "Parents".equals(edgeFilter);
+    return "Parents".equals(edgeFilter);
   }
 
   private boolean isEdgeRulesFilter(String edgeFilter) {
-    return "Both".equals(edgeFilter) || "Edgerules".equals(edgeFilter);
+    return "Edgerules".equals(edgeFilter);
   }
 
   private Set<Edge> filterEdgesStrict(Set<Edge> edges, Set<String> subGraphVertices) {

@@ -9,7 +9,7 @@ class PopupMenu extends React.Component {
       <Popup trigger={<button className='settings-button' disabled={this.props.isDisabled}>Hops</button>} position="bottom right">
         {close => (
           <div>
-            <GraphHops parentHops={this.props.parentHops} childHops={this.props.childHops} cousinHops={this.props.cousinHops} updateHops={this.props.updateHops} />
+            <GraphHops edgeFilter={this.props.edgeFilter} parentHops={this.props.parentHops} childHops={this.props.childHops} cousinHops={this.props.cousinHops} updateHops={this.props.updateHops} />
             <button
               type="button"
               className="link-button, close"

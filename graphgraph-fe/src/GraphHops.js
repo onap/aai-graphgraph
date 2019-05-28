@@ -50,7 +50,14 @@ class GraphHops extends React.Component {
   }
 
   render () {
-    // {createNumInput('cousin hops', this.onChangeCousin, this.state.cousinHops)}
+    if (this.props.edgeFilter === 'Edgerules'){
+      return (
+        <div className="hops-input">
+         {createNumInput('edgerule hops', this.onChangeCousin, this.state.cousinHops)}
+        </div>
+      )
+    }
+
     return (
       <div className="hops-input">
         {createNumInput('parent hops', this.onChangeParent, this.state.parentHops)}
