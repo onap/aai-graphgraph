@@ -6,9 +6,6 @@ import ReactTable from "react-table";
 import "react-table/react-table.css";
 
 class GraphInfoMenu extends React.Component {
-  constructor (props) {
-    super(props)
-  }
 
   render () {
     var paths = this.props.paths
@@ -27,30 +24,35 @@ class GraphInfoMenu extends React.Component {
             {
               Header: "Attribute",
               accessor: "propertyName",
-              minWidth: 50
+              minWidth: 40
+            },
+            {
+              Header: "Type",
+              accessor: "type",
+              minWidth: 70
             },
             {
               Header: "Description",
               accessor: "description",
-              minWidth: 300
+              minWidth: 260
             },
             {
               id: "Key",
               Header: "Key",
               accessor: p => p.key ? "yes" : "",
-              minWidth: 30
+              minWidth: 20
             },
             {
               id: "Index",
               Header: "Index",
               accessor: p => p.index ? "yes" : "",
-              minWidth: 30
+              minWidth: 20
             },
             {
               id: "Required",
               Header: "Required",
               accessor: p => p.required ? "yes" : "",
-              minWidth: 30
+              minWidth: 20
             }
           ]}
           defaultPageSize={4}

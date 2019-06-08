@@ -1,6 +1,6 @@
 import React from 'react'
 import GraphSettings from './GraphSettings'
-import { Navbar, FormGroup, Nav } from 'react-bootstrap'
+import { Navbar, Nav } from 'react-bootstrap'
 import './GraphSettingsMenu.css'
 
 class GraphSettingsMenu extends React.Component {

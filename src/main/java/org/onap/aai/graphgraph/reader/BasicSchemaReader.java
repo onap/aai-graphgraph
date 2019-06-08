@@ -157,7 +157,6 @@ public class BasicSchemaReader implements SchemaReader {
 
     Introspector introspector = allEntities.get(nodeName);
     List<String> properties = introspector.getProperties().stream()
-        .filter(p -> !allEntities.containsKey(p))
         .sorted()
         .collect(Collectors.toList());
 
@@ -166,7 +165,7 @@ public class BasicSchemaReader implements SchemaReader {
           p,
           introspector.getPropertyMetadata(p)
               .getOrDefault(PropertyMetadata.DESCRIPTION,"no description available"),
-          "I don't know", //TODO how to get this information????
+          introspector.getType(p),
           introspector.getAllKeys().contains(p),
           introspector.getIndexedProperties().contains(p),
           introspector.getRequiredProperties().contains(p))
