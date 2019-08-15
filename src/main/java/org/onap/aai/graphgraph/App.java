@@ -19,11 +19,12 @@
  */
 package org.onap.aai.graphgraph;
 
+import static org.onap.aai.graphgraph.ModelExporter.exportModel;
+
 import java.util.HashMap;
 import java.util.Map;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.introspection.MoxyLoader;
-import org.onap.aai.introspection.exceptions.AAIUnknownObjectException;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.restclient.PropertyPasswordConfiguration;
 import org.onap.aai.setup.SchemaVersion;
@@ -48,10 +49,16 @@ public class App{
     }
 
     public static void main( String[] args ) {
+        ArgumentParser parser = new ArgumentParser().parseArguments(args);
         SpringApplication app  = new SpringApplication(App.class);
         app.addInitializers(new PropertyPasswordConfiguration());
         ConfigurableApplicationContext context = app.run(args);
         loadSchemes(context);
         edgeIngestor = (EdgeIngestor) context.getBean("edgeIngestor");
+
+        if (parser.shoudGenerateUml()){
+            exportModel(parser.getSchemaVersion());
+            System.exit(0);
+        }
     }
 }
