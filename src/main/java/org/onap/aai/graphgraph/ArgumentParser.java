@@ -24,11 +24,19 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
 public class ArgumentParser {
-  @Option(name = "-g", usage = "schema to be generated", metaVar = "schema")
+  @Option(name = "-g", usage = "generates schema model for Papyrus and exits where XY is the version", metaVar = "vXY")
   private String schemaVersion;
 
+  @Option(name = "-d", usage = "connect to dev version of schema-service (use JAR bundled keystore)")
+  private boolean runLocally;
+
+  @Option(name = "-h", usage = "print help and exit")
+  private boolean printHelp;
+
+  CmdLineParser parser;
+
   public ArgumentParser parseArguments(String [] args){
-    CmdLineParser parser = new CmdLineParser(this);
+    parser = new CmdLineParser(this);
 
     try {
       parser.parseArgument(args);
@@ -50,5 +58,17 @@ public class ArgumentParser {
 
   public boolean shoudGenerateUml(){
     return schemaVersion != null;
+  }
+
+  public boolean isRunLocally() {
+    return runLocally;
+  }
+
+  public boolean isPrintHelp() {
+    return printHelp;
+  }
+
+  public void printHelp(){
+    parser.printUsage(System.out);
   }
 }

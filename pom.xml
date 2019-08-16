@@ -162,6 +162,16 @@
       <resource>
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
+        <excludes>
+          <exclude>etc/auth/aai_keystore</exclude>
+        </excludes>
+      </resource>
+      <resource>
+        <filtering>false</filtering>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>etc/auth/aai_keystore</include>
+        </includes>
       </resource>
     </resources>
       <plugins>

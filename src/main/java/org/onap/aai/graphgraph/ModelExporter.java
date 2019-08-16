@@ -24,7 +24,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -151,17 +150,33 @@ public class ModelExporter {
 
   private static Set<VelocityAssociation> createVelocityAssociations(Set<VelocityEntity> entities,
       Multimap<String, EdgeRule> edgeRules) {
-    Set<VelocityAssociation> result = new HashSet<>();
-      result.addAll(edgeRules.values().stream().map(er ->
-          new VelocityAssociation(
-              findVelocityEntity(er.getFrom(), entities),
-              findVelocityEntity(er.getTo(), entities),
-              String.format("%s - %s (label: %s)", er.getFrom(), er.getTo(), er.getLabel()),
-              er.getMultiplicityRule().name(),
-              er.getLabel().equals("org.onap.relationships.inventory.BelongsTo")
-          )).collect(Collectors.toSet()));
+    return edgeRules.values().stream().flatMap(er -> {
+      VelocityAssociation out = createVelocityAssociation(entities, er.getFrom(), er.getTo(),
+          er.getLabel(), er.getMultiplicityRule().name());
+      VelocityAssociation in = createVelocityAssociation(entities, er.getTo(), er.getFrom(),
+          er.getLabel(), er.getMultiplicityRule().name());
+      switch (er.getDirection()) {
+        case OUT:
+          return Stream.of(out);
+        case IN:
+          return Stream.of(in);
+        case BOTH:
+          return Stream.of(out, in);
+        default:
+          return null;
+      }
+    }).collect(Collectors.toSet());
+  }
 
-    return result;
+  private static VelocityAssociation createVelocityAssociation(Set<VelocityEntity> entities,
+      String from, String to, String label, String multiplicity) {
+    return new VelocityAssociation(
+         findVelocityEntity(from, entities),
+         findVelocityEntity(to, entities),
+         String.format("%s - %s (label: %s)", from, to, label),
+         multiplicity,
+        label.equals("org.onap.relationships.inventory.BelongsTo")
+     );
   }
 
   private static VelocityEntity findVelocityEntity(String from, Set<VelocityEntity> entities) {

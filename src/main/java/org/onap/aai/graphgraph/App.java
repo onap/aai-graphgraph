@@ -21,8 +21,14 @@ package org.onap.aai.graphgraph;
 
 import static org.onap.aai.graphgraph.ModelExporter.exportModel;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import org.apache.commons.io.FileUtils;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.introspection.MoxyLoader;
 import org.onap.aai.nodes.NodeIngestor;
@@ -48,9 +54,20 @@ public class App{
         }
     }
 
-    public static void main( String[] args ) {
+    public static void main( String[] args ) throws IOException {
         ArgumentParser parser = new ArgumentParser().parseArguments(args);
+
+        if (parser.isPrintHelp()){
+            parser.printHelp();
+            return;
+        }
+
         SpringApplication app  = new SpringApplication(App.class);
+
+        if (parser.isRunLocally()){
+            copyKeystore(app);
+        }
+
         app.addInitializers(new PropertyPasswordConfiguration());
         ConfigurableApplicationContext context = app.run(args);
         loadSchemes(context);
@@ -59,6 +76,15 @@ public class App{
         if (parser.shoudGenerateUml()){
             exportModel(parser.getSchemaVersion());
             System.exit(0);
+        }
+    }
+
+    private static void copyKeystore(SpringApplication app) throws IOException {
+        Path path = Paths.get("etc/auth/aai_keystore");
+        if (Files.notExists(path)) {
+            FileUtils.copyInputStreamToFile(Objects
+                    .requireNonNull(app.getClassLoader().getResourceAsStream("etc/auth/aai_keystore")),
+                path.toFile());
         }
     }
 }
