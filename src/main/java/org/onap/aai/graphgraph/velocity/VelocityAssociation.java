@@ -95,10 +95,21 @@ public class VelocityAssociation extends VelocityId {
   }
 
   @Override
+  public String toString() {
+    return "VelocityAssociation{" +
+        "name='" + name + '\'' +
+        ", fromEntity=" + fromEntity +
+        ", toEntity=" + toEntity +
+        '}';
+  }
+
+  @Override
   public int hashCode() {
     int result = name.hashCode();
     result = 31 * result + fromEntity.hashCode();
     result = 31 * result + toEntity.hashCode();
     return result;
+
+
   }
 }

@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.tinkerpop.gremlin.structure.Direction;
@@ -44,28 +46,22 @@ import org.onap.aai.edges.enums.MultiplicityRule;
 import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.graphgraph.velocity.VelocityAssociation;
 import org.onap.aai.graphgraph.velocity.VelocityEntity;
+import org.onap.aai.graphgraph.velocity.VelocityEntityProperty;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.setup.SchemaVersion;
 
 public class ModelExporter {
 
   private static final String AAIMODEL_UML_FILENAME = "aaimodel.uml";
-  public static final String VELOCITY_TEMPLATE_FILENAME = "model_export.vm";
-
+  private static final String VELOCITY_TEMPLATE_FILENAME = "model_export.vm";
+  private static final boolean OXM_ENABLED = false;
+  private static final String camelCaseRegex = "(?=[A-Z][a-z])";
   private static Multimap<String, EdgeRule> getEdgeRules(String schemaVersion) {
       try {
         Multimap<String, EdgeRule> allRules = App.edgeIngestor.getAllRules(new SchemaVersion(schemaVersion));
-        Map<String, Introspector> allEntities = App.moxyLoaders.get("v16").getAllObjects();
-        for (Entry<String, Introspector> currentParent : allEntities.entrySet()) {
-          currentParent.getValue().getProperties().stream()
-              .filter(v -> allEntities.containsKey(v))
-              .filter(v -> !currentParent.getKey().equals(v))
-              .forEach(v -> {
-                String key = currentParent.getKey() + "|" + v;
-                if (!allRules.containsKey(key)) {
-                  allRules.put(key, createEdgeRule(currentParent.getKey(), v));
-                }
-              });
+        Map<String, Introspector> allEntities = App.moxyLoaders.get(schemaVersion).getAllObjects();
+        if (OXM_ENABLED) {
+          addOxmRelationships(allRules, allEntities);
         }
         return allRules;
       } catch (EdgeRuleNotFoundException e) {
@@ -73,6 +69,21 @@ public class ModelExporter {
       }
 
     return null;
+  }
+
+  private static void addOxmRelationships(Multimap<String, EdgeRule> allRules,
+      Map<String, Introspector> allEntities) {
+    for (Entry<String, Introspector> currentParent : allEntities.entrySet()) {
+      currentParent.getValue().getProperties().stream()
+          .filter(v -> allEntities.containsKey(v))
+          .filter(v -> !currentParent.getKey().equals(v))
+          .forEach(v -> {
+            String key = currentParent.getKey() + "|" + v;
+            if (!allRules.containsKey(key)) {
+              allRules.put(key, createEdgeRule(currentParent.getKey(), v));
+            }
+          });
+    }
   }
 
   private static EdgeRule createEdgeRule(String parent, String child) {
@@ -133,11 +144,31 @@ public class ModelExporter {
       List<VelocityAssociation> associations = associationsList.stream()
           .filter(a -> a.getFromEntityId().equals(e.getId())).collect(
               Collectors.toList());
-
-      entityList.forEach(entity -> entity.setProperties(allObjects.get(entity.getName()).getProperties()));
-
-      e.setNeighbours(associations);
+      updateNeighbour(entityList, associations);
     });
+
+    entityList.forEach(entity -> entity.setProperties(getPropertiesForEntity(allObjects.get(entity.getName()), entityList)));
+
+  }
+
+  private static void updateNeighbour(
+      Set<VelocityEntity> entityList, List<VelocityAssociation> associations) {
+    associations.forEach(ass -> {
+      VelocityEntity velocityEntity = entityList.stream()
+          .filter(e -> e.getId().equals(ass.getToEntityId())).findFirst().get();
+      velocityEntity.addNeighbours(ass);
+    });
+  }
+
+  private static Set<VelocityEntityProperty> getPropertiesForEntity(Introspector introspector,
+      Set<VelocityEntity> entityList) {
+    return introspector.getProperties().stream()
+        .map(p -> new VelocityEntityProperty(
+            p,
+            introspector.getType(p),
+            findVelocityEntity(introspector.getType(p), entityList)))
+        .collect(
+            Collectors.toSet());
   }
 
   private static Set<VelocityEntity> createEntityList(
@@ -170,16 +201,43 @@ public class ModelExporter {
 
   private static VelocityAssociation createVelocityAssociation(Set<VelocityEntity> entities,
       String from, String to, String label, String multiplicity) {
+    boolean composition = isComposition(label);
     return new VelocityAssociation(
-         findVelocityEntity(from, entities),
-         findVelocityEntity(to, entities),
-         String.format("%s - %s (label: %s)", from, to, label),
-         multiplicity,
-        label.equals("org.onap.relationships.inventory.BelongsTo")
+        entities.stream().filter( ent -> ent.getName().equals(from)).findFirst().get(),
+        entities.stream().filter( ent -> ent.getName().equals(to)).findFirst().get(),
+        String.format("%s - %s (label: %s)", from, to, shortenLabel(label)),
+        multiplicity,
+        composition
      );
   }
 
-  private static VelocityEntity findVelocityEntity(String from, Set<VelocityEntity> entities) {
-    return entities.stream().filter(e -> e.getName().equals(from)).findFirst().get();
+  private static String shortenLabel(String label) {
+    if (label.contains(".")) {
+      String[] split = label.split("\\.");
+      return split[split.length - 1];
+    }
+
+    return label;
+  }
+
+  private static boolean isComposition(String label) {
+    return label.equals("org.onap.relationships.inventory.BelongsTo");
+  }
+
+  private static VelocityEntity findVelocityEntity(String entityName, Set<VelocityEntity> entities) {
+    if (entityName.startsWith("java.lang")){
+      return null;
+    }
+
+    if ( ! entityName.startsWith("inventory.aai.onap.org")){
+      return null;
+    }
+
+    String[] split = entityName.split("\\.");
+    String entityNameRoot = split[split.length - 1];
+    final Pattern pattern = Pattern.compile(camelCaseRegex);
+    final Matcher matcher = pattern.matcher(entityNameRoot.substring(1, entityNameRoot.length()));
+    String finalEntityNameRoot = (entityNameRoot.charAt(0) + matcher.replaceAll("-")).toLowerCase();
+    return entities.stream().filter(e -> e.getName().equals(finalEntityNameRoot)).findFirst().orElse(null);
   }
 }
