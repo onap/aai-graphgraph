@@ -19,19 +19,20 @@
  */
 package org.onap.aai.graphgraph.velocity;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 public class VelocityEntity extends VelocityId {
   private String name;
-  private List<VelocityAssociation> neighbours;
-  private Set<String> properties;
+  private List<VelocityAssociation> neighbours = new LinkedList<>();
+  private Set<VelocityEntityProperty> properties;
 
-  public Set<String> getProperties() {
+  public Set<VelocityEntityProperty> getProperties() {
     return properties;
   }
 
-  public void setProperties(Set<String> properties) {
+  public void setProperties(Set<VelocityEntityProperty> properties) {
     this.properties = properties;
   }
 
@@ -55,6 +56,11 @@ public class VelocityEntity extends VelocityId {
     this.neighbours = neighbours;
   }
 
+  public void addNeighbours(VelocityAssociation neighbour) {
+    neighbours.add(neighbour);
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -72,5 +78,12 @@ public class VelocityEntity extends VelocityId {
   @Override
   public int hashCode() {
     return name.hashCode();
+  }
+
+  @Override
+  public String toString() {
+    return "VelocityEntity{" +
+        "name='" + name + '\'' +
+        '}';
   }
 }

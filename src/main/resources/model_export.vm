@@ -1,44 +1,106 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_Z9InoLIpEemXwfLFUQ7Icw" name="AAIModel">
+<uml:Model xmi:version="20131001" xmlns:xmi="http://www.omg.org/spec/XMI/20131001"
+           xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+           xmlns:uml="http://www.eclipse.org/uml2/5.0.0/UML" xmi:id="_Z9InoLIpEemXwfLFUQ7Icw"
+           name="AAIModel">
   <packageImport xmi:type="uml:PackageImport" xmi:id="_aFqRgLIpEemXwfLFUQ7Icw">
-    <importedPackage xmi:type="uml:Model" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
+    <importedPackage xmi:type="uml:Model"
+                     href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#_0"/>
   </packageImport>
   <packagedElement xmi:type="uml:Package" xmi:id="_dl4P8LIpEemXwfLFUQ7Icw" name="Associations">
-    #foreach($association in $associationList)
-      <packagedElement xmi:type="uml:Association" xmi:id="$association.id" name="$association.name" memberEnd="$association.fromId $association.toId">
-        <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="$association.randomId" source="org.eclipse.papyrus">
-          <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="$association.randomId" key="nature" value="UML_Nature"/>
-        </eAnnotations>
-        <ownedEnd xmi:type="uml:Property" xmi:id="$association.toId" name="$association.fromEntityName" type="$association.fromEntityId" association="$association.id">
-          #if($association.multiplicity == "MANY2ONE" || $association.multiplicity == "MANY2MANY")
-            <lowerValue xmi:type="uml:LiteralInteger" xmi:id="$association.randomId"/>
-            <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="$association.randomId" value="*"/>
-          #else
-            <lowerValue xmi:type="uml:LiteralInteger" xmi:id="$association.randomId" value="1"/>
-            <upperValue xmi:type="uml:LiteralInteger" xmi:id="$association.randomId" value="1"/>
-          #end
-        </ownedEnd>
-      </packagedElement>
-    #end
+      #foreach($association in $associationList)
+        <packagedElement xmi:type="uml:Association" xmi:id="$association.id"
+                         name="$association.name" memberEnd="$association.fromId $association.toId">
+          <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="$association.randomId"
+                        source="org.eclipse.papyrus">
+            <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="$association.randomId"
+                     key="nature" value="UML_Nature"/>
+          </eAnnotations>
+          <ownedEnd xmi:type="uml:Property" xmi:id="$association.fromId"
+                    name="$association.toEntityName" type="$association.toEntityId"
+                    association="$association.id">
+              #if($association.multiplicity == "ONE2MANY" || $association.multiplicity ==
+                  "MANY2MANY")
+                <lowerValue xmi:type="uml:LiteralInteger" xmi:id="$association.randomId"/>
+                <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="$association.randomId"
+                            value="*"/>
+              #else
+                <lowerValue xmi:type="uml:LiteralInteger" xmi:id="$association.randomId" value="1"/>
+                <upperValue xmi:type="uml:LiteralInteger" xmi:id="$association.randomId" value="1"/>
+              #end
+          </ownedEnd>
+            #if( ! $association.isComposition)
+              <ownedEnd xmi:type="uml:Property" xmi:id="$association.toId"
+                        name="$association.fromEntityName" type="$association.fromEntityId"
+                        association="$association.id">
+                  #if($association.multiplicity == "MANY2ONE" || $association.multiplicity ==
+                      "MANY2MANY")
+                    <lowerValue xmi:type="uml:LiteralInteger" xmi:id="$association.randomId"/>
+                    <upperValue xmi:type="uml:LiteralUnlimitedNatural"
+                                xmi:id="$association.randomId" value="*"/>
+                  #else
+                    <lowerValue xmi:type="uml:LiteralInteger" xmi:id="$association.randomId"
+                                value="1"/>
+                    <upperValue xmi:type="uml:LiteralInteger" xmi:id="$association.randomId"
+                                value="1"/>
+                  #end
+              </ownedEnd>
+            #end
+        </packagedElement>
+      #end
   </packagedElement>
   <packagedElement xmi:type="uml:Package" xmi:id="_rBN-QLIqEemXwfLFUQ7Icw" name="ObjectClasses">
-    #foreach($entity in $entityList)
-      <packagedElement xmi:type="uml:Class" xmi:id="$entity.id" name="$entity.name">
-      #foreach($association in $entity.neighbours)
-        <ownedAttribute xmi:type="uml:Property" xmi:id="$association.fromId" name="$association.toEntityName" type="$association.toEntityId" #if( $association.isComposition) aggregation="composite" #end association="$association.id">
-          #if($association.multiplicity == "ONE2MANY" || $association.multiplicity == "MANY2MANY")
-            <lowerValue xmi:type="uml:LiteralInteger" xmi:id="$association.randomId"/>
-            <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="$association.randomId" value="*"/>
-          #else
-            <lowerValue xmi:type="uml:LiteralInteger" xmi:id="$association.randomId" value="1"/>
-            <upperValue xmi:type="uml:LiteralInteger" xmi:id="$association.randomId" value="1"/>
-          #end
-        </ownedAttribute>
+      #foreach($entity in $entityList)
+        <packagedElement xmi:type="uml:Class" xmi:id="$entity.id" name="$entity.name">
+            #foreach($association in $entity.neighbours)
+                #if( $association.isComposition)
+                  <ownedAttribute xmi:type="uml:Property" xmi:id="$association.toId"
+                                  name="$association.fromEntityName"
+                                  type="$association.fromEntityId" aggregation="composite"
+                                  association="$association.id">
+                      #if($association.multiplicity == "MANY2ONE" || $association.multiplicity ==
+                          "MANY2MANY")
+                        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="$association.randomId"/>
+                        <upperValue xmi:type="uml:LiteralUnlimitedNatural"
+                                    xmi:id="$association.randomId" value="*"/>
+                      #else
+                        <lowerValue xmi:type="uml:LiteralInteger" xmi:id="$association.randomId"
+                                    value="1"/>
+                        <upperValue xmi:type="uml:LiteralInteger" xmi:id="$association.randomId"
+                                    value="1"/>
+                      #end
+                  </ownedAttribute>
+                #end
+            #end
+            #foreach($prop in $entity.properties)
+                #if($prop.propertyValue.contains("java.lang"))
+                  <ownedAttribute xmi:type="uml:Property" xmi:id="$entity.randomId"
+                                  name="$prop.propertyName">
+                      #if($prop.propertyValue == "java.lang.String")
+                        <type xmi:type="uml:PrimitiveType"
+                              href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+                      #end#
+                      #if($prop.propertyValue == "java.lang.Long")
+                        <type xmi:type="uml:PrimitiveType"
+                              href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+                      #end
+                      #if($prop.propertyValue == "java.lang.Boolean")
+                        <type xmi:type="uml:PrimitiveType"
+                              href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+                      #end
+                      #if($prop.propertyValue == "java.lang.Integer")
+                        <type xmi:type="uml:PrimitiveType"
+                              href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+                      #end
+                  </ownedAttribute>
+                #elseif(! $prop.hasEntity)
+                #* <ownedAttribute xmi:type="uml:Property" xmi:id="$entity.randomId" name="$prop.propertyName"/>*#
+                #else
+                  <ownedAttribute xmi:type="uml:Property" xmi:id="$entity.randomId"
+                                  name="$prop.getEntityName()" type="$prop.getEntityId()"/>
+                #end
+            #end
+        </packagedElement>
       #end
-      #foreach($prop in $entity.properties)
-      <ownedAttribute xmi:type="uml:Property" xmi:id="$entity.randomId" name="$prop"/>
-      #end
-      </packagedElement>
-    #end
   </packagedElement>
 </uml:Model>
