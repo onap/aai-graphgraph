@@ -125,6 +125,7 @@
                         <arg>java</arg>
                         <arg>-jar</arg>
                         <arg>/graphgraph/${project.artifactId}-${project.version}.${project.packaging}</arg>
+                        <arg>--spring.config.location=/graphgraph/application.properties</arg>
                       </exec>
                     </entryPoint>
                     <assembly>
