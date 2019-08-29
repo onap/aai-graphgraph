@@ -56,10 +56,11 @@ public class ModelExporter {
   private static final String VELOCITY_TEMPLATE_FILENAME = "model_export.vm";
   private static final boolean OXM_ENABLED = false;
   private static final String camelCaseRegex = "(?=[A-Z][a-z])";
+  private static Map<String, Introspector> allEntities;
   private static Multimap<String, EdgeRule> getEdgeRules(String schemaVersion) {
       try {
         Multimap<String, EdgeRule> allRules = App.edgeIngestor.getAllRules(new SchemaVersion(schemaVersion));
-        Map<String, Introspector> allEntities = App.moxyLoaders.get(schemaVersion).getAllObjects();
+        allEntities = App.moxyLoaders.get(schemaVersion).getAllObjects();
         if (OXM_ENABLED) {
           addOxmRelationships(allRules, allEntities);
         }
@@ -183,9 +184,9 @@ public class ModelExporter {
       Multimap<String, EdgeRule> edgeRules) {
     return edgeRules.values().stream().flatMap(er -> {
       VelocityAssociation out = createVelocityAssociation(entities, er.getFrom(), er.getTo(),
-          er.getLabel(), er.getMultiplicityRule().name());
+          er.getLabel(), er.getMultiplicityRule().name(), er.getContains());
       VelocityAssociation in = createVelocityAssociation(entities, er.getTo(), er.getFrom(),
-          er.getLabel(), er.getMultiplicityRule().name());
+          er.getLabel(), er.getMultiplicityRule().name(), er.getContains());
       switch (er.getDirection()) {
         case OUT:
           return Stream.of(out);
@@ -200,15 +201,34 @@ public class ModelExporter {
   }
 
   private static VelocityAssociation createVelocityAssociation(Set<VelocityEntity> entities,
-      String from, String to, String label, String multiplicity) {
-    boolean composition = isComposition(label);
-    return new VelocityAssociation(
-        entities.stream().filter( ent -> ent.getName().equals(from)).findFirst().get(),
-        entities.stream().filter( ent -> ent.getName().equals(to)).findFirst().get(),
-        String.format("%s - %s (label: %s)", from, to, shortenLabel(label)),
-        multiplicity,
-        composition
-     );
+      String from, String to, String label, String multiplicity, String contains) {
+    VelocityEntity fromEntity = entities.stream().filter(ent -> ent.getName().equals(from))
+        .findFirst().get();
+    VelocityEntity toEntity = entities.stream().filter(ent -> ent.getName().equals(to)).findFirst()
+        .get();
+    switch (contains) {
+      case "IN":
+        return new VelocityAssociation(
+            fromEntity,
+            toEntity,
+            String.format("%s - %s (%s)", from, to, shortenLabel(label)),
+            multiplicity,
+            true);
+      case "OUT":
+        return new VelocityAssociation(
+            toEntity,
+            fromEntity,
+            String.format("%s - %s (%s)", to, from, shortenLabel(label)),
+            multiplicity,
+            true);
+      default:
+        return new VelocityAssociation(
+            fromEntity,
+            toEntity,
+            String.format("%s - %s (%s)", from, to, shortenLabel(label)),
+            multiplicity,
+            false);
+    }
   }
 
   private static String shortenLabel(String label) {
@@ -218,10 +238,6 @@ public class ModelExporter {
     }
 
     return label;
-  }
-
-  private static boolean isComposition(String label) {
-    return label.equals("org.onap.relationships.inventory.BelongsTo");
   }
 
   private static VelocityEntity findVelocityEntity(String entityName, Set<VelocityEntity> entities) {
