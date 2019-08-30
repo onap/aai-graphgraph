@@ -3,9 +3,11 @@ import _ from 'underscore'
 import { DropdownButton, MenuItem, Label } from 'react-bootstrap'
 import './GraphSettings.css'
 import Popup from './PopupSettings'
-import { pathGraph, basicGraph, schemas, nodeNames } from './requests'
+import ValidationModal from './ValidationModal'
+import { validateSchema, pathGraph, basicGraph, schemas, nodeNames } from './requests'
 
 var emptyState = {
+  schemaProblems: [],
   nodeNames: [],
   fromNode: '',
   graph: {
@@ -92,6 +94,12 @@ class GraphSettings extends React.Component {
       .then(nodeNames => {
         s['fromNode'] = s['toNode'] = 'none'
         s['nodeNames'] = nodeNames
+        this.setState(s)
+      })
+    fetch(validateSchema(schema))
+      .then(response => response.json())
+      .then(p => {
+        s['schemaProblems'] = p.problems
         this.setState(s)
       })
   }
@@ -211,8 +219,11 @@ class GraphSettings extends React.Component {
             </div>
 
             <Popup isDisabled={!this.state.showHops} edgeFilter={this.state.edgeFilter} parentHops={this.state.hops.parents} childHops={this.state.hops.child} cousinHops={this.state.hops.cousin} updateHops={this.updateHops}/>
+        <div className="modal-button">
+        <ValidationModal schemaProblems={this.state.schemaProblems}/>
+        </div>
           </div>
-
+           
         </div>
       </div>
     )

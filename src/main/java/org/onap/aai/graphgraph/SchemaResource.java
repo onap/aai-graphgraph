@@ -23,6 +23,7 @@ import org.onap.aai.graphgraph.dto.Graph;
 import org.onap.aai.graphgraph.dto.NodeName;
 import org.onap.aai.graphgraph.dto.NodeProperty;
 import org.onap.aai.graphgraph.dto.Property;
+import org.onap.aai.graphgraph.dto.ValidationProblems;
 import org.onap.aai.graphgraph.reader.SchemaRepository;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,7 +59,7 @@ public class SchemaResource {
 
 
     @RequestMapping("/schemas/{schema}/edges")
-    public List<Property> loadedgeProperties(
+    public List<Property> loadedgeProperties (
             @PathVariable("schema") String schemaName,
             @RequestParam("fromNode") String fromNodeName,
             @RequestParam("toNode") String toNodeName) {
@@ -67,7 +68,7 @@ public class SchemaResource {
 
 
     @RequestMapping("/schemas/{schema}/graph/basic")
-    public Graph loadGraph(
+    public Graph loadGraph (
             @PathVariable("schema") String schemaName,
             @RequestParam("node") String initialNodeName,
             @RequestParam("parentHops") Integer parentHops,
@@ -82,7 +83,7 @@ public class SchemaResource {
 
 
     @RequestMapping("/schemas/{schema}/graph/paths")
-    public Graph loadGraphWithPaths(
+    public Graph loadGraphWithPaths (
             @PathVariable("schema") String schemaName,
             @RequestParam("fromNode") String fromNode,
             @RequestParam("toNode") String toNode,
@@ -91,7 +92,10 @@ public class SchemaResource {
         return repository.getSchemaReader(schemaName).getGraph(fromNode, toNode, edgeFilter);
     }
 
-
+    @RequestMapping("/schemas/{schema}/validation")
+    public ValidationProblems validateSchema ( @PathVariable("schema") String schemaName) {
+        return new SchemaValidator().validate(schemaName);
+    }
 }
 
 

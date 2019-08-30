@@ -1,0 +1,31 @@
+.modal-content
+{
+height: 100%;
+width: 100%;
+}
+
+.modal-validator
+{
+    position: 'fixed';
+    width: 1024;
+    height: 768;
+    zIndex: 1040;
+    top: '5%';
+    left: '5%';
+    border: '1px solid #e5e5e5';
+    backgroundColor: 'white';
+    boxShadow: '0 5px 15px rgba(0,0,0,.5)';
+    padding: 0;
+}  
+
+.modal-backdrop 
+{
+    position: 'fixed';
+    zIndex: 1040;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    backgroundColor: '#000';
+    opacity: 0.5;
+}

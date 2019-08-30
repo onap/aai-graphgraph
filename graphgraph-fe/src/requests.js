@@ -5,6 +5,10 @@ export function schemas () {
   return `http://${host}:${port}/schemas`
 }
 
+export function validateSchema (schema) {
+  return `http://${host}:${port}/schemas/${schema}/validation`
+}
+
 export function nodeNames (schema, edgeFilter) {
   return `http://${host}:${port}/schemas/${schema}/nodes?edgeFilter=${edgeFilter}`
 }

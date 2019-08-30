@@ -27,3 +27,10 @@
     display: flex;
     width: 80px !important;
 }
+
+
+.modal-button 
+{
+    padding-top: 20px;
+    margin: 0;
+}
