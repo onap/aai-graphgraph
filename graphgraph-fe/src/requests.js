@@ -1,30 +1,31 @@
 const host = window.location.hostname;
-const port = 8453;
+const port = window.location.port;
+const protocol = window.location.protocol;
 
 export function schemas () {
-  return `http://${host}:${port}/schemas`
+  return `${protocol}://${host}:${port}/schemas`
 }
 
 export function validateSchema (schema) {
-  return `http://${host}:${port}/schemas/${schema}/validation`
+  return `${protocol}://${host}:${port}/schemas/${schema}/validation`
 }
 
 export function nodeNames (schema, edgeFilter) {
-  return `http://${host}:${port}/schemas/${schema}/nodes?edgeFilter=${edgeFilter}`
+  return `${protocol}://${host}:${port}/schemas/${schema}/nodes?edgeFilter=${edgeFilter}`
 }
 
 export function basicGraph (schema, node, parentHops, cousinHops, childHops, edgeFilter) {
-  return `http://${host}:${port}/schemas/${schema}/graph/basic?node=${node}&parentHops=${parentHops}&cousinHops=${cousinHops}&childHops=${childHops}&edgeFilter=${edgeFilter}`
+  return `${protocol}://${host}:${port}/schemas/${schema}/graph/basic?node=${node}&parentHops=${parentHops}&cousinHops=${cousinHops}&childHops=${childHops}&edgeFilter=${edgeFilter}`
 }
 
 export function pathGraph (schema, fromNode, toNode, edgeFilter) {
-  return `http://${host}:${port}/schemas/${schema}/graph/paths?fromNode=${fromNode}&toNode=${toNode}&edgeFilter=${edgeFilter}`
+  return `${protocol}://${host}:${port}/schemas/${schema}/graph/paths?fromNode=${fromNode}&toNode=${toNode}&edgeFilter=${edgeFilter}`
 }
 
 export function nodeProperty (schema, node) {
-  return `http://${host}:${port}/schemas/${schema}/nodes/${node}`
+  return `${protocol}://${host}:${port}/schemas/${schema}/nodes/${node}`
 }
 
 export function edgeProperty (schema, fromNode, toNode) {
-  return `http://${host}:${port}/schemas/${schema}/edges?fromNode=${fromNode}&toNode=${toNode}`
+  return `${protocol}://${host}:${port}/schemas/${schema}/edges?fromNode=${fromNode}&toNode=${toNode}`
 }
