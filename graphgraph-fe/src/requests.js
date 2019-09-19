@@ -10,6 +10,10 @@ export function validateSchema (schema) {
   return `${protocol}//${host}:${port}/schemas/${schema}/validation`
 }
 
+export function exportSchema (schema) {
+  return `${protocol}//${host}:${port}/schemas/${schema}/xmiexport`
+}
+
 export function nodeNames (schema, edgeFilter) {
   return `${protocol}//${host}:${port}/schemas/${schema}/nodes?edgeFilter=${edgeFilter}`
 }

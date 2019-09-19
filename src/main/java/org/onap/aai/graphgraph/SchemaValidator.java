@@ -2,7 +2,6 @@ package org.onap.aai.graphgraph;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +23,7 @@ public class SchemaValidator {
 
     checkIfDanglingEdgerules(validationProblems);
     checkIfObsoleteOxm(validationProblems);
+    schema.getSchemaErrors().forEach(validationProblems::addProblem);
     return validationProblems;
   }
 

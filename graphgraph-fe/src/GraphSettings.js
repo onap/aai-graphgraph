@@ -4,6 +4,7 @@ import { DropdownButton, MenuItem, Label } from 'react-bootstrap'
 import './GraphSettings.css'
 import Popup from './PopupSettings'
 import ValidationModal from './ValidationModal'
+import DownloadExport from './DownloadExport'
 import { validateSchema, pathGraph, basicGraph, schemas, nodeNames } from './requests'
 
 var emptyState = {
@@ -220,8 +221,13 @@ class GraphSettings extends React.Component {
 
             <Popup isDisabled={!this.state.showHops} edgeFilter={this.state.edgeFilter} parentHops={this.state.hops.parents} childHops={this.state.hops.child} cousinHops={this.state.hops.cousin} updateHops={this.updateHops}/>
         <div className="modal-button">
-        <ValidationModal schemaProblems={this.state.schemaProblems}/>
+            <ValidationModal schemaProblems={this.state.schemaProblems}/>
         </div>
+
+        <div className="modal-button">
+            <DownloadExport schemaVersion={this.state.selectedSchema}/>
+        </div>
+
           </div>
            
         </div>

@@ -51,9 +51,14 @@ import org.onap.aai.setup.SchemaVersion;
 public class BasicSchemaReader implements SchemaReader {
 
   private Map<String, Introspector> allEntities;
-  Graph<String, MetadataEdge> graph = new DefaultDirectedGraph<>(MetadataEdge.class);
+  private Graph<String, MetadataEdge> graph = new DefaultDirectedGraph<>(MetadataEdge.class);
   private EdgeIngestor edgeIngestor;
   private String version;
+  private List<String> schemaErrors = new LinkedList<>();
+
+  public List<String> getSchemaErrors() {
+    return schemaErrors;
+  }
 
   public BasicSchemaReader(String version) {
     this.version = version;
@@ -119,8 +124,18 @@ public class BasicSchemaReader implements SchemaReader {
       String[] split = label.split("\\.");
       label = split[split.length - 1];
     }
+    checkVertexExist(graph, parent);
+    checkVertexExist(graph, child);
+
     graph.addEdge(child, parent,
         new MetadataEdge(EdgeType.EDGE_RULE.getTypeName(), child, parent, label));
+  }
+
+  private void checkVertexExist(Graph<String, MetadataEdge> graph, String vertex) {
+    if (! graph.vertexSet().contains(vertex)) {
+      graph.addVertex(vertex);
+      schemaErrors.add(String.format("Schema is inconsistent, missing node %s", vertex));
+    }
   }
 
   private void addParentChildEdge(String parent, String child, Graph<String, MetadataEdge> graph) {

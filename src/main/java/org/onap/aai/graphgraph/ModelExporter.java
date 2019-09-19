@@ -103,15 +103,19 @@ public class ModelExporter {
     return new EdgeRule(edgeRuleProps);
   }
 
-  static void exportModel(String schemaVersion) {
+  static String exportModel(String schemaVersion) {
     Map<String, Introspector> allObjects = App.moxyLoaders.get(schemaVersion).getAllObjects();
     Template t = initVelocity();
     VelocityContext context = populateVelocityContext(schemaVersion, allObjects);
     StringWriter writer = new StringWriter();
     t.merge( context, writer );
+    return writer.toString();
+  }
+
+  static void writeExportedModel(String result) {
     try {
       FileWriter fw = new FileWriter(AAIMODEL_UML_FILENAME);
-      fw.write(writer.toString());
+      fw.write(result);
       fw.close();
     } catch (IOException e) {
       e.printStackTrace();
@@ -219,7 +223,7 @@ public class ModelExporter {
             toEntity,
             fromEntity,
             String.format("%s - %s (%s)", to, from, shortenLabel(label)),
-            multiplicity,
+            multiplicity.equals("ONE2MANY") ? "MANY2ONE" : multiplicity,
             true);
       default:
         return new VelocityAssociation(

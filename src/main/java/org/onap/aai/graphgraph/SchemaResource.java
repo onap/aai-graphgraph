@@ -25,9 +25,11 @@ import org.onap.aai.graphgraph.dto.NodeProperty;
 import org.onap.aai.graphgraph.dto.Property;
 import org.onap.aai.graphgraph.dto.ValidationProblems;
 import org.onap.aai.graphgraph.reader.SchemaRepository;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -95,6 +97,12 @@ public class SchemaResource {
     @RequestMapping("/schemas/{schema}/validation")
     public ValidationProblems validateSchema ( @PathVariable("schema") String schemaName) {
         return new SchemaValidator().validate(schemaName);
+    }
+
+    @RequestMapping(value = "/schemas/{schema}/xmiexport", produces = MediaType.TEXT_XML_VALUE)
+    @ResponseBody
+    public String exportSchema ( @PathVariable("schema") String schemaName) {
+        return ModelExporter.exportModel(schemaName);
     }
 }
 

@@ -20,6 +20,7 @@
 package org.onap.aai.graphgraph;
 
 import static org.onap.aai.graphgraph.ModelExporter.exportModel;
+import static org.onap.aai.graphgraph.ModelExporter.writeExportedModel;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -74,7 +75,7 @@ public class App{
         edgeIngestor = (EdgeIngestor) context.getBean("edgeIngestor");
 
         if (parser.shoudGenerateUml()){
-            exportModel(parser.getSchemaVersion());
+            writeExportedModel(exportModel(parser.getSchemaVersion()));
             System.exit(0);
         }
     }
