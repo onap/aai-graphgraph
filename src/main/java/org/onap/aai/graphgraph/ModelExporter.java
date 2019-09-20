@@ -39,6 +39,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
+import org.eclipse.jetty.util.StringUtil;
 import org.onap.aai.edges.EdgeRule;
 import org.onap.aai.edges.enums.DirectionNotation;
 import org.onap.aai.edges.enums.EdgeField;
@@ -48,6 +49,7 @@ import org.onap.aai.graphgraph.velocity.VelocityAssociation;
 import org.onap.aai.graphgraph.velocity.VelocityEntity;
 import org.onap.aai.graphgraph.velocity.VelocityEntityProperty;
 import org.onap.aai.introspection.Introspector;
+import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.setup.SchemaVersion;
 
 public class ModelExporter {
@@ -150,6 +152,8 @@ public class ModelExporter {
           .filter(a -> a.getFromEntityId().equals(e.getId())).collect(
               Collectors.toList());
       updateNeighbour(entityList, associations);
+        String description = allEntities.get(e.getName()).getMetadata(ObjectMetadata.DESCRIPTION);
+        e.setDescription(StringUtil.isBlank(description) ? "no description is available" : description);
     });
 
     entityList.forEach(entity -> entity.setProperties(getPropertiesForEntity(allObjects.get(entity.getName()), entityList)));

@@ -52,6 +52,9 @@
   <packagedElement xmi:type="uml:Package" xmi:id="_rBN-QLIqEemXwfLFUQ7Icw" name="ObjectClasses">
       #foreach($entity in $entityList)
         <packagedElement xmi:type="uml:Class" xmi:id="$entity.id" name="$entity.name">
+                <ownedComment xmi:type="uml:Comment" xmi:id="$entity.randomId" annotatedElement="$entity.id">
+                  <body>$entity.description</body>
+                </ownedComment>
             #foreach($association in $entity.neighbours)
                 #if( $association.isComposition)
                   <ownedAttribute xmi:type="uml:Property" xmi:id="$association.toId"
