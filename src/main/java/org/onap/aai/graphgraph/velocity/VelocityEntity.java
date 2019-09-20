@@ -25,6 +25,7 @@ import java.util.Set;
 
 public class VelocityEntity extends VelocityId {
   private String name;
+  private String description;
   private List<VelocityAssociation> neighbours = new LinkedList<>();
   private Set<VelocityEntityProperty> properties;
 
@@ -34,6 +35,14 @@ public class VelocityEntity extends VelocityId {
 
   public void setProperties(Set<VelocityEntityProperty> properties) {
     this.properties = properties;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 
   public VelocityEntity(String name) {
