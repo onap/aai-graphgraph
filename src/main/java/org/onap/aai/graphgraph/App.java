@@ -49,7 +49,7 @@ public class App{
     // to some initialization issues. By all means feel free to improve and move it to Spring
     public static void loadSchemes(ConfigurableApplicationContext context){
         String version;
-        for (int i = 10; i < 17; i++) {
+        for (int i = 10; i < 19; i++) {
             version = "v" + i;
             moxyLoaders.put(version, new MoxyLoader(new SchemaVersion(version), (NodeIngestor) context.getBean("nodeIngestor")) );
         }
