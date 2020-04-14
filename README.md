@@ -14,7 +14,7 @@ To start the frontend just run the following command:
 
 The UI will be available on http://localhost:3000
 
-In order to start the webservices run the App.java from your Java IDE (the service runs on localhost port 8080). 
+In order to start the webservices run the App.java from your Java IDE (the service runs on localhost port 8080).
 
 ## Building docker images
 
@@ -22,7 +22,7 @@ In order to start the webservices run the App.java from your Java IDE (the servi
 
 ## Running GraphGraph locally
 
-You have to start a local instance (i.e. localhost) of schema-service. Afterwards build the GraphGraph JAR file with: 
+You have to start a local instance (i.e. localhost) of schema-service. Afterwards build the GraphGraph JAR file with:
 
 ### `mvn clean install`
 
@@ -30,6 +30,6 @@ Go into the target directory and run the JAR file with -d switch:
 
 ### `java -jar graphgraph-X.Y.jar -d`
 
-where X.Y is the current version. For more options run the help via: 
+where X.Y is the current version. For more options run the help via:
 
 ### `java -jar graphgraph-X.Y.jar -h`

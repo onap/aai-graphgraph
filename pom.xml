@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -46,9 +46,9 @@
   </dependencyManagement>
   <dependencies>
     <dependency>
-  <groupId>ch.qos.logback</groupId>
-  <artifactId>logback-classic</artifactId>
-</dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
@@ -186,82 +186,82 @@
         </includes>
       </resource>
     </resources>
-      <plugins>
-        <plugin>
-          <groupId>com.github.eirslett</groupId>
-          <artifactId>frontend-maven-plugin</artifactId>
-          <version>1.7.6</version>
-          <executions>
-            <execution>
-              <id>install node</id>
-              <goals>
-                <goal>install-node-and-npm</goal>
-              </goals>
-              <phase>generate-resources</phase>
-              <configuration>
-                <workingDirectory>${project.basedir}/graphgraph-fe</workingDirectory>
-                <nodeVersion>v10.10.0</nodeVersion>
-              </configuration>
-            </execution>
-            <execution>
-              <id>npm install</id>
-              <goals>
-                <goal>npm</goal>
-              </goals>
-              <phase>generate-resources</phase>
-              <configuration>
-                <workingDirectory>${project.basedir}/graphgraph-fe</workingDirectory>
-                <arguments>install</arguments>
-              </configuration>
-            </execution>
-            <execution>
-              <id>npm build</id>
-              <goals>
-                <goal>npm</goal>
-              </goals>
-              <phase>generate-resources</phase>
-              <configuration>
-                <workingDirectory>${project.basedir}/graphgraph-fe</workingDirectory>
-                <arguments>run build</arguments>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-              <artifactId>maven-resources-plugin</artifactId>
-              <version>3.1.0</version>
-              <executions>
-                  <execution>
-                      <id>copy-resources-ui</id>
-                      <phase>prepare-package</phase>
-                      <goals>
-                          <goal>copy-resources</goal>
-                      </goals>
-                      <configuration>
-                          <outputDirectory>${project.build.directory}/classes/public</outputDirectory>
-                          <resources>
-                              <resource>
-                                  <directory>${project.basedir}/graphgraph-fe/build</directory>
-                                  <filtering>false</filtering>
-                              </resource>
-                          </resources>
-                      </configuration>
-                  </execution>
-              </executions>
-          </plugin>
-          <plugin>
-              <groupId>org.springframework.boot</groupId>
-              <artifactId>spring-boot-maven-plugin</artifactId>
-              <version>2.1.2.RELEASE</version>
-              <executions>
-                  <execution>
-                      <goals>
-                          <goal>repackage</goal>
-                      </goals>
-                  </execution>
-              </executions>
-          </plugin>
-      </plugins>
+    <plugins>
+      <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <version>1.7.6</version>
+        <executions>
+          <execution>
+            <id>install node</id>
+            <goals>
+              <goal>install-node-and-npm</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <workingDirectory>${project.basedir}/graphgraph-fe</workingDirectory>
+              <nodeVersion>v10.10.0</nodeVersion>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npm install</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <workingDirectory>${project.basedir}/graphgraph-fe</workingDirectory>
+              <arguments>install</arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>npm build</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <workingDirectory>${project.basedir}/graphgraph-fe</workingDirectory>
+              <arguments>run build</arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>copy-resources-ui</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/classes/public</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/graphgraph-fe/build</directory>
+                  <filtering>false</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>2.1.2.RELEASE</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
   <!-- Start of ONAP Specific Repositories -->
   <repositories>

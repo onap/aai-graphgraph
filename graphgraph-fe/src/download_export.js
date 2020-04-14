@@ -19,15 +19,25 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './app.js';
-import * as serviceWorker from './service_worker.js';
-import 'bootstrap-css-only/css/bootstrap.css';
+import { Button } from 'react-bootstrap';
+import { exportSchema } from './requests.js';
 
-ReactDOM.render(<App/>, document.getElementById('root'));
+class DownloadExport extends React.Component {
+    constructor (props, context) {
+        super(props, context);
+        this.download = this.download.bind(this);
+    }
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: http://bit.ly/CRA-PWA
-serviceWorker.unregister();
+    download() {
+        setTimeout(() => {
+            const response = { file: exportSchema(this.props.schemaVersion) };
+            window.open(response.file);
+        }, 100);
+    }
+
+    render() {
+        return <Button onClick={this.download}>Download as XMI</Button>;
+    }
+}
+
+export default DownloadExport;

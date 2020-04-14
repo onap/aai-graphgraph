@@ -19,15 +19,22 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './app.js';
-import * as serviceWorker from './service_worker.js';
-import 'bootstrap-css-only/css/bootstrap.css';
+import Popup from 'reactjs-popup';
+import './popup_settings.css';
+import GraphHops from './graph_hops.js';
 
-ReactDOM.render(<App/>, document.getElementById('root'));
+class PopupMenu extends React.Component {
+    render () {
+        return (
+                <Popup trigger={<button className='settings-button' disabled={this.props.isDisabled}>Hops</button>} position="bottom right">
+                {close => (
+                        <div>
+                        <GraphHops edgeFilter={this.props.edgeFilter} parentHops={this.props.parentHops} childHops={this.props.childHops} cousinHops={this.props.cousinHops} updateHops={this.props.updateHops}/>
+                        <button type="button" className="link-button, close" onClick={close}>&times;</button>
+                        </div>
+                )}</Popup>
+        );
+    }
+}
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: http://bit.ly/CRA-PWA
-serviceWorker.unregister();
+export default PopupMenu;
