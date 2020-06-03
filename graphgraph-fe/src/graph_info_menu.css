@@ -6,15 +6,15 @@
 }
 
 .pagination {
-   margin: 0 12px 0 20px !important;
+    margin: 0 12px 0 20px !important;
 }
 
 .fixed-height-container {
     overflow: scroll;
     float:top;
     height: 200px;
-    width:40%; 
-    padding:3px; 
+    width:40%;
+    padding:3px;
     background:white;
 }
 
@@ -70,4 +70,3 @@
     margin-right: 0;
     margin-left: 0;
 }
-

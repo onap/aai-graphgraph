@@ -18,16 +18,29 @@
  * ============LICENSE_END=========================================================
  */
 
+import _ from 'underscore';
 import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './app.js';
-import * as serviceWorker from './service_worker.js';
-import 'bootstrap-css-only/css/bootstrap.css';
+import { Breadcrumb } from 'react-bootstrap';
 
-ReactDOM.render(<App/>, document.getElementById('root'));
+class PathBreadcrumb extends React.Component {
+    constructor (props, context) {
+        super(props, context);
+        this.pathSelected = this.pathSelected.bind(this);
+    }
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: http://bit.ly/CRA-PWA
-serviceWorker.unregister();
+    pathSelected (evt) {
+        evt.preventDefault();
+        // the data is only piggyback riding on the "target" property .. not nice but works
+        this.props.pathCallback(this.props.index, evt.target.getAttribute('target'));
+    }
+
+    render () {
+        var path = this.props.path;
+        var callback = this.pathSelected;
+        var items = _.map(path, (item, i) => <Breadcrumb.Item key={i} target={item.id} onClick={callback}> {item.id} </Breadcrumb.Item>);
+
+        return <Breadcrumb>{items}</Breadcrumb>;
+    }
+}
+
+export default PathBreadcrumb;

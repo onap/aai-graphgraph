@@ -1,12 +1,11 @@
-
 .navbar.navbar-adjust{
-margin-bottom: 0px;
+    margin-bottom: 0px;
 }
 
 .navbar-adjust .container {
-margin-left: 0;    
+    margin-left: 0;
 }
 
 .navbar-adjust .container .navbar-header {
-margin-right: 250px;
+    margin-right: 250px;
 }

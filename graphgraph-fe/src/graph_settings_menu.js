@@ -19,15 +19,27 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './app.js';
-import * as serviceWorker from './service_worker.js';
-import 'bootstrap-css-only/css/bootstrap.css';
+import GraphSettings from './graph_settings.js';
+import { Navbar, Nav } from 'react-bootstrap';
+import './graph_settings_menu.css';
 
-ReactDOM.render(<App/>, document.getElementById('root'));
+class GraphSettingsMenu extends React.Component {
+    render () {
+        return (
+                <Navbar className='navbar-adjust'>
+                <Navbar.Header>
+                <Navbar.Brand>
+                <a href="https://gerrit.onap.org/r/gitweb?p=aai/graphgraph.git">GraphGraph</a>
+                </Navbar.Brand>
+                </Navbar.Header>
+                <Nav className="mr-auto">
+                <Navbar.Collapse className='mr-sm-2'>
+                <GraphSettings selectedNode={this.props.selectedNode} graphData={this.props.graphData} nodePropsLoader={this.props.nodePropsLoader}/>
+                </Navbar.Collapse>
+                </Nav>
+                </Navbar>
+        );
+    }
+}
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: http://bit.ly/CRA-PWA
-serviceWorker.unregister();
+export default GraphSettingsMenu;
