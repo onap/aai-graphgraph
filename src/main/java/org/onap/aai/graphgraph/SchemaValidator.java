@@ -70,7 +70,7 @@ public class SchemaValidator {
     }
 
     /**
-     *  computes edgerules which don't have the necessary connection to relationship-list in OXM
+     * computes edgerules which don't have the necessary connection to relationship-list in OXM
      * @param validationProblems
      */
     private void checkIfDanglingEdgerules(ValidationProblems validationProblems) {

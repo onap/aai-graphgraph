@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -77,10 +78,11 @@ public class ModelExporter {
 
     private static void addOxmRelationships(
             Multimap<String, EdgeRule> allRules,
-            Map<String, Introspector> allEntities) {
+            Map<String, Introspector> allEntities
+    ) {
         for (Entry<String, Introspector> currentParent : allEntities.entrySet()) {
             currentParent.getValue().getProperties().stream()
-                    .filter(v -> allEntities.containsKey(v))
+                    .filter(allEntities::containsKey)
                     .filter(v -> !currentParent.getKey().equals(v))
                     .forEach(v -> {
                         String key = currentParent.getKey() + "|" + v;
@@ -128,11 +130,13 @@ public class ModelExporter {
 
     private static VelocityContext populateVelocityContext(
             String schemaVersion,
-            Map<String, Introspector> allObjects) {
+            Map<String, Introspector> allObjects
+    ) {
         VelocityContext context = new VelocityContext();
         Multimap<String, EdgeRule> edgeRules = getEdgeRules(schemaVersion);
         Set<VelocityEntity> entityList = createEntityList(edgeRules);
-        Set<VelocityAssociation> associationsList = createVelocityAssociations(entityList, edgeRules);
+        Set<VelocityAssociation> associationsList = createVelocityAssociations(
+                entityList, Objects.requireNonNull(edgeRules));
         updateEntities(entityList, associationsList, allObjects);
         context.put("entityList", entityList);
         context.put("associationList", associationsList);
@@ -150,7 +154,8 @@ public class ModelExporter {
     private static void updateEntities(
             Set<VelocityEntity> entityList,
             Set<VelocityAssociation> associationsList,
-            Map<String, Introspector> allObjects) {
+            Map<String, Introspector> allObjects
+    ) {
         entityList.forEach(e -> {
             List<VelocityAssociation> associations = associationsList.stream()
                     .filter(a -> a.getFromEntityId().equals(e.getId())).collect(
@@ -161,16 +166,16 @@ public class ModelExporter {
         });
 
         entityList.forEach(
-                entity -> entity.setProperties(getPropertiesForEntity(allObjects.get(entity.getName()), entityList)));
-
+                e -> e.setProperties(getPropertiesForEntity(allObjects.get(e.getName()), entityList)));
     }
 
     private static void updateNeighbour(
-            Set<VelocityEntity> entityList, List<VelocityAssociation> associations) {
+            Set<VelocityEntity> entityList, List<VelocityAssociation> associations
+    ) {
         associations.forEach(ass -> {
-            VelocityEntity velocityEntity = entityList.stream()
-                    .filter(e -> e.getId().equals(ass.getToEntityId())).findFirst().get();
-            velocityEntity.addNeighbours(ass);
+            Optional<VelocityEntity> velocityEntity = entityList.stream()
+                    .filter(e -> e.getId().equals(ass.getToEntityId())).findFirst();
+            velocityEntity.ifPresent(entity -> entity.addNeighbours(ass));
         });
     }
 
@@ -217,33 +222,36 @@ public class ModelExporter {
 
     private static VelocityAssociation createVelocityAssociation(
             Set<VelocityEntity> entities, String from, String to, String label, String multiplicity, String contains) {
-        VelocityEntity fromEntity = entities.stream()
-                .filter(ent -> ent.getName().equals(from)).findFirst().get();
-        VelocityEntity toEntity = entities.stream()
-                .filter(ent -> ent.getName().equals(to)).findFirst().get();
-        switch (contains) {
-            case "IN":
-                return new VelocityAssociation(
-                        fromEntity,
-                        toEntity,
-                        String.format("%s - %s (%s)", from, to, shortenLabel(label)),
-                        multiplicity,
-                        true);
-            case "OUT":
-                return new VelocityAssociation(
-                        toEntity,
-                        fromEntity,
-                        String.format("%s - %s (%s)", to, from, shortenLabel(label)),
-                        multiplicity.equals("ONE2MANY") ? "MANY2ONE" : multiplicity,
-                        true);
-            default:
-                return new VelocityAssociation(
-                        fromEntity,
-                        toEntity,
-                        String.format("%s - %s (%s)", from, to, shortenLabel(label)),
-                        multiplicity,
-                        false);
+        Optional<VelocityEntity> fromEntity = entities.stream()
+                .filter(ent -> ent.getName().equals(from)).findFirst();
+        Optional<VelocityEntity> toEntity = entities.stream()
+                .filter(ent -> ent.getName().equals(to)).findFirst();
+        if (fromEntity.isPresent() && toEntity.isPresent()) {
+            switch (contains) {
+                case "IN":
+                    return new VelocityAssociation(
+                            fromEntity.get(),
+                            toEntity.get(),
+                            String.format("%s - %s (%s)", from, to, shortenLabel(label)),
+                            multiplicity,
+                            true);
+                case "OUT":
+                    return new VelocityAssociation(
+                            toEntity.get(),
+                            fromEntity.get(),
+                            String.format("%s - %s (%s)", to, from, shortenLabel(label)),
+                            multiplicity.equals("ONE2MANY") ? "MANY2ONE" : multiplicity,
+                            true);
+                default:
+                    return new VelocityAssociation(
+                            fromEntity.get(),
+                            toEntity.get(),
+                            String.format("%s - %s (%s)", from, to, shortenLabel(label)),
+                            multiplicity,
+                            false);
+            }
         }
+        return null;
     }
 
     private static String shortenLabel(String label) {

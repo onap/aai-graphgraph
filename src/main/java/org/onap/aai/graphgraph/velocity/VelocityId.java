@@ -23,13 +23,13 @@ import java.util.UUID;
 
 public abstract class VelocityId {
 
-    private String id = getRandomId();
+    private final String id = getRandomId();
 
     public String getId() {
         return id;
     }
 
-    public String getRandomId() {
+    public static String getRandomId() {
         return UUID.randomUUID().toString();
     }
 }
