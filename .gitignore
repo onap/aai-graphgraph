@@ -9,6 +9,7 @@
 
 # production
 /graphgraph-fe/build
+/target
 
 # misc
 /graphgraph-fe/DS_Store
@@ -21,5 +22,6 @@
 /graphgraph-fe/yarn-debug.log*
 /graphgraph-fe/yarn-error.log*
 
+# idea
 /.idea
-/target
+*.iml
