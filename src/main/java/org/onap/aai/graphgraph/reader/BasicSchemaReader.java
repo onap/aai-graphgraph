@@ -20,7 +20,6 @@
 package org.onap.aai.graphgraph.reader;
 
 import com.google.common.collect.Multimap;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -28,10 +27,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.FloydWarshallShortestPaths;
@@ -53,8 +54,8 @@ public class BasicSchemaReader implements SchemaReader {
     private Map<String, Introspector> allEntities;
     private Graph<String, MetadataEdge> graph = new DefaultDirectedGraph<>(MetadataEdge.class);
     private EdgeIngestor edgeIngestor;
-    private String version;
-    private List<String> schemaErrors = new LinkedList<>();
+    private final String version;
+    private final List<String> schemaErrors = new LinkedList<>();
 
     public BasicSchemaReader(String version) {
         this.version = version;
@@ -99,8 +100,8 @@ public class BasicSchemaReader implements SchemaReader {
             //TODO fix
         }
 
-        allRules.asMap().values().stream()
-                .flatMap(e -> e.stream())
+        Objects.requireNonNull(allRules).asMap().values().stream()
+                .flatMap(Collection::stream)
                 .forEach(e -> {
                     switch (e.getDirection()) {
                         case OUT:
@@ -158,7 +159,7 @@ public class BasicSchemaReader implements SchemaReader {
         return createGraph(
                 isParentChildFilter(edgeFilter),
                 isEdgeRulesFilter(edgeFilter)).edgeSet().stream()
-                .flatMap(e -> Arrays.asList(e.getSource(), e.getTarget()).stream())
+                .flatMap(e -> Stream.of(e.getSource(), e.getTarget()))
                 .sorted().distinct()
                 .map(NodeName::new)
                 .collect(Collectors.toList());

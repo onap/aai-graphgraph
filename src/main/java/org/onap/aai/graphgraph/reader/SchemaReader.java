@@ -19,12 +19,11 @@
  */
 package org.onap.aai.graphgraph.reader;
 
+import java.util.List;
 import org.onap.aai.graphgraph.dto.Graph;
 import org.onap.aai.graphgraph.dto.NodeName;
 import org.onap.aai.graphgraph.dto.NodeProperty;
 import org.onap.aai.graphgraph.dto.Property;
-
-import java.util.List;
 
 public interface SchemaReader {
 

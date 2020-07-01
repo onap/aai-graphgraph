@@ -19,10 +19,9 @@
  */
 package org.onap.aai.graphgraph;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import org.onap.aai.graphgraph.reader.BasicSchemaReader;
-import org.onap.aai.graphgraph.reader.SchemaReader;
 import org.onap.aai.graphgraph.reader.SchemaRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -42,11 +41,10 @@ public class Config {
 
     @Bean
     SchemaRepository createSchemaRepository() {
-        List<SchemaReader> readers = new LinkedList<>();
-        for (String s : schemaVersions.split(",")) {
-            readers.add(new BasicSchemaReader(s));
-        }
-        return new SchemaRepository(readers);
+        return new SchemaRepository(
+                Arrays.stream(schemaVersions.split(","))
+                        .map(BasicSchemaReader::new)
+                        .collect(Collectors.toList())
+        );
     }
 }
-

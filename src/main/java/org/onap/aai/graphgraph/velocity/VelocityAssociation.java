@@ -29,8 +29,10 @@ public class VelocityAssociation extends VelocityId {
     private final String multiplicity;
     private final boolean isComposition;
 
-    public VelocityAssociation(VelocityEntity fromEntity,
-            VelocityEntity toEntity, String name, String multiplicity, boolean isComposition) {
+    public VelocityAssociation(
+            VelocityEntity fromEntity, VelocityEntity toEntity,
+            String name, String multiplicity, boolean isComposition
+    ) {
         this.fromEntity = fromEntity;
         this.toEntity = toEntity;
         this.name = name;

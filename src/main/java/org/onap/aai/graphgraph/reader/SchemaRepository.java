@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 public class SchemaRepository {
 
-    private List<SchemaReader> readers;
+    private final List<SchemaReader> readers;
 
     public SchemaRepository(List<SchemaReader> readers) {
         this.readers = readers;
