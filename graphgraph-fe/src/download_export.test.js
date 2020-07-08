@@ -19,25 +19,29 @@
  */
 
 import React from 'react';
-import GraphSettings from './graph_settings.js';
-import { Navbar, Nav } from 'react-bootstrap';
-import './graph_settings_menu.css';
+import { mount } from 'enzyme';
 
-class GraphSettingsMenu extends React.Component {
-    render () {
-        return (
-                <Navbar className='navbar-adjust'>
-                    <Navbar.Header>
-                        <Navbar.Brand>
-                            <a href="https://gerrit.onap.org/r/gitweb?p=aai/graphgraph.git">GraphGraph</a>
-                        </Navbar.Brand>
-                    </Navbar.Header>
-                    <Navbar.Collapse className='mr-sm-2'>
-                        <GraphSettings selectedNode={this.props.selectedNode} graphData={this.props.graphData} nodePropsLoader={this.props.nodePropsLoader}/>
-                    </Navbar.Collapse>
-                </Navbar>
-        );
-    }
-}
+import DownloadExport from './download_export';
 
-export default GraphSettingsMenu;
+describe('component DownloadExport', () => {
+
+    const testData = {
+        schemaVersion: 'v10',
+        downloadUrl: 'http://localhost:/schemas/v10/xmiexport'
+    };
+
+    it('renders download export button', async () => {
+        let downloadExport = mount(<DownloadExport schemaVersion={testData.schemaVersion}/>);
+
+        jest.spyOn(window, 'open').mockImplementation(() => {});
+
+        // click on download button
+        downloadExport.find('button').simulate('click');
+
+        // wait for window open call
+        await new Promise((resolve, reject) => setTimeout(() => resolve(), 150));
+        
+        // assert download action
+        expect(window.open).toBeCalledWith(testData.downloadUrl);
+    });
+});
