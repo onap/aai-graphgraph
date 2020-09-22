@@ -2,4 +2,3 @@
 #
 6b5523e29a5ac70dab65cf913aa32e03bb273842                                       	saml/onap-gerrit-aai-graphgraph-committers
 daebbf523be390041a1a9c0e340a6d833aae5043                                       	GitHub Replication
-ldap:cn=onap-gerrit-aai-graphgraph-committers,ou=Groups,dc=freestandards,dc=org	ldap/onap-gerrit-aai-graphgraph-committers
