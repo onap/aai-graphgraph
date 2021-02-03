@@ -40,6 +40,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
+import org.apache.velocity.tools.generic.EscapeTool;
 import org.eclipse.jetty.util.StringUtil;
 import org.onap.aai.edges.EdgeRule;
 import org.onap.aai.edges.enums.DirectionNotation;
@@ -140,6 +141,7 @@ public class ModelExporter {
         updateEntities(entityList, associationsList, allObjects);
         context.put("entityList", entityList);
         context.put("associationList", associationsList);
+        context.put("esc", new EscapeTool());
         return context;
     }
 

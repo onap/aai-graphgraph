@@ -51,7 +51,7 @@
       #foreach($entity in $entityList)
       <packagedElement xmi:type="uml:Class" xmi:id="$entity.id" name="$entity.name">
         <ownedComment xmi:type="uml:Comment" xmi:id="$entity.randomId" annotatedElement="$entity.id">
-          <body>$entity.description</body>
+          <body>$esc.xml($entity.description)</body>
         </ownedComment>
         #foreach($association in $entity.neighbours)
         #if( $association.isComposition)

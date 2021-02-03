@@ -6,31 +6,31 @@
 }
 
 .schemas-dropdown{
-    width: 100px;
+    width: 60px;
 }
 
-.node-dropdown{
+.node-dropdown {
     width: 200px;
 }
 
-.source-dropdown-div{
-    margin-left: 20px;
-    margin-right: 20px;
+.source-dropdown-div {
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 3px;
 }
 
-.startendnode-dropdown{
+.startendnode-dropdown {
     display: flex;
 }
 
-.graph-menu
-{
+.graph-menu {
     display: flex;
     width: 80px !important;
 }
 
 
-.modal-button
-{
+.modal-button {
     padding-top: 20px;
-    margin: 0;
+    margin-left: 5px;
+    margin-right: 5px;
 }

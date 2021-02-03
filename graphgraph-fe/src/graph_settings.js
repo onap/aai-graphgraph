@@ -216,39 +216,47 @@ class GraphSettings extends React.Component {
                 <MenuItem key='Parents' eventKey='Parents'>Parent-child (OXM structure)</MenuItem>,
         ];
         return (
-                <div>
+            <div>
                 <div className="graph-menu">
-                <div className="startendnode-dropdown">
-                <div>
-                <Label>Schemas</Label>
-                <DropdownButton className="schemas-dropdown" onSelect={this.selectSchema} id="schemas" title={this.state.selectedSchema}>{schemas}</DropdownButton>
+                    <div className="startendnode-dropdown">
+                        <div>
+                            <Label>Schemas</Label>
+                            <DropdownButton className="schemas-dropdown" onSelect={this.selectSchema} id="schemas"
+                                            title={this.state.selectedSchema}>{schemas}</DropdownButton>
+                        </div>
+                        <div className="source-dropdown-div">
+                            <Label>Source Node</Label>
+                            <DropdownButton className="node-dropdown" onSelect={this.onChangeStartNode} id="namesFrom"
+                                            title={this.state.fromNode}>{fromItems}</DropdownButton>
+                        </div>
+                        <div>
+                            <Label>Destination Node</Label>
+                            <DropdownButton disabled={!this.state.enableDestinationNode} className="node-dropdown"
+                                            onSelect={this.onChangeToNode} id="namesTo"
+                                            title={this.state.toNode}>{items}</DropdownButton>
+                        </div>
+                        <div className="source-dropdown-div">
+                            <Label>Edge filter</Label>
+                            <DropdownButton className="node-dropdown" onSelect={this.changeEdgeFilter} id="filterEdge"
+                                            title={this.state.edgeFilter}>{edgeFilterItems}</DropdownButton>
+                        </div>
+                        <div>
+                            <Label>Selected Node</Label>
+                            <DropdownButton className="node-dropdown" onSelect={this.onSelectNode} id="selectedNode"
+                                            title={this.props.selectedNode}>{currentNodeNames}</DropdownButton>
+                        </div>
+                        <Popup isDisabled={!this.state.showHops} edgeFilter={this.state.edgeFilter}
+                               parentHops={this.state.hops.parents} childHops={this.state.hops.child}
+                               cousinHops={this.state.hops.cousin} updateHops={this.updateHops}/>
+                        <div className="modal-button">
+                            <ValidationModal schemaProblems={this.state.schemaProblems}/>
+                        </div>
+                        <div className="modal-button">
+                            <DownloadExport schemaVersion={this.state.selectedSchema}/>
+                        </div>
+                    </div>
                 </div>
-                <div className="source-dropdown-div">
-                <Label>Source Node</Label>
-                <DropdownButton className="node-dropdown" onSelect={this.onChangeStartNode} id="namesFrom" title={this.state.fromNode}>{fromItems}</DropdownButton>
-                </div>
-                <div>
-                <Label>Destination Node</Label>
-                <DropdownButton disabled={!this.state.enableDestinationNode} className="node-dropdown" onSelect={this.onChangeToNode} id="namesTo" title={this.state.toNode}>{items}</DropdownButton>
-                </div>
-                <div className="source-dropdown-div">
-                <Label>Edge filter</Label>
-                <DropdownButton className="node-dropdown" onSelect={this.changeEdgeFilter} id="filterEdge" title={this.state.edgeFilter}>{edgeFilterItems}</DropdownButton>
-                </div>
-                <div className="source-dropdown-div">
-                <Label>Selected Node</Label>
-                <DropdownButton className="node-dropdown" onSelect={this.onSelectNode} id="selectedNode" title={this.props.selectedNode}>{currentNodeNames}</DropdownButton>
-                </div>
-                <Popup isDisabled={!this.state.showHops} edgeFilter={this.state.edgeFilter} parentHops={this.state.hops.parents} childHops={this.state.hops.child} cousinHops={this.state.hops.cousin} updateHops={this.updateHops}/>
-                <div className="modal-button">
-                <ValidationModal schemaProblems={this.state.schemaProblems}/>
-                </div>
-                <div className="modal-button">
-                <DownloadExport schemaVersion={this.state.selectedSchema}/>
-                </div>
-                </div>
-                </div>
-                </div>
+            </div>
         );
     }
 }
