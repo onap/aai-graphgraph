@@ -9,6 +9,11 @@
       #foreach($association in $associationList)
       <packagedElement xmi:type="uml:Association" xmi:id="$association.id"
                        name="$association.name" memberEnd="$association.fromId $association.toId">
+        #if($association.hasDescription())
+        <ownedComment xmi:type="uml:Comment" xmi:id="$association.randomId" annotatedElement="$association.id">
+          <body>$esc.xml($association.description)</body>
+        </ownedComment>
+        #end
         <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="$association.randomId"
                       source="org.eclipse.papyrus">
           <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="$association.randomId"
@@ -50,9 +55,11 @@
     <packagedElement xmi:type="uml:Package" xmi:id="_rBN-QLIqEemXwfLFUQ7Icw" name="ObjectClasses">
       #foreach($entity in $entityList)
       <packagedElement xmi:type="uml:Class" xmi:id="$entity.id" name="$entity.name">
+        #if($entity.hasDescription())
         <ownedComment xmi:type="uml:Comment" xmi:id="$entity.randomId" annotatedElement="$entity.id">
           <body>$esc.xml($entity.description)</body>
         </ownedComment>
+        #end
         #foreach($association in $entity.neighbours)
         #if( $association.isComposition)
         <ownedAttribute xmi:type="uml:Property" xmi:id="$association.toId"
@@ -77,10 +84,15 @@
         #if($prop.propertyValue.contains("java.lang"))
         <ownedAttribute xmi:type="uml:Property" xmi:id="$prop.propertyId"
                         name="$prop.propertyName">
+          #if($prop.hasDescription())
+          <ownedComment xmi:type="uml:Comment" xmi:id="$prop.randomId">
+            <body>$esc.xml($prop.description)</body>
+          </ownedComment>
+          #end
           #if($prop.propertyValue == "java.lang.String")
           <type xmi:type="uml:PrimitiveType"
                 href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
-          #end#
+          #end
           #if($prop.propertyValue == "java.lang.Long")
           <type xmi:type="uml:PrimitiveType"
                 href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
@@ -94,11 +106,17 @@
                 href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
           #end
         </ownedAttribute>
-        #elseif(! $prop.hasEntity)
+        #elseif(! $prop.hasEntity())
         #* <ownedAttribute xmi:type="uml:Property" xmi:id="$entity.randomId" name="$prop.propertyName"/>*#
         #else
         <ownedAttribute xmi:type="uml:Property" xmi:id="$prop.propertyId"
-                        name="$prop.getEntityName()" type="$prop.getEntityId()"/>
+                        name="$prop.getEntityName()" type="$prop.getEntityId()">
+          #if($prop.hasDescription())
+          <ownedComment xmi:type="uml:Comment" xmi:id="$prop.randomId">
+            <body>$esc.xml($prop.description)</body>
+          </ownedComment>
+          #end
+        </ownedAttribute>
         #end
         #end
       </packagedElement>

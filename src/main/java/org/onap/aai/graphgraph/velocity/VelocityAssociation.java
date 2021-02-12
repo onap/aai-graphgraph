@@ -19,9 +19,12 @@
  */
 package org.onap.aai.graphgraph.velocity;
 
+import org.eclipse.jetty.util.StringUtil;
+
 public class VelocityAssociation extends VelocityId {
 
     private final String name;
+    private final String description;
     private final VelocityEntity fromEntity;
     private final VelocityEntity toEntity;
     private final String fromId = getRandomId();
@@ -31,11 +34,12 @@ public class VelocityAssociation extends VelocityId {
 
     public VelocityAssociation(
             VelocityEntity fromEntity, VelocityEntity toEntity,
-            String name, String multiplicity, boolean isComposition
+            String name, String description, String multiplicity, boolean isComposition
     ) {
         this.fromEntity = fromEntity;
         this.toEntity = toEntity;
         this.name = name;
+        this.description = description;
         this.multiplicity = multiplicity;
         this.isComposition = isComposition;
     }
@@ -70,6 +74,14 @@ public class VelocityAssociation extends VelocityId {
 
     public String getMultiplicity() {
         return multiplicity.toUpperCase();
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public boolean hasDescription() {
+        return !StringUtil.isBlank(description);
     }
 
     @Override

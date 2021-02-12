@@ -19,6 +19,8 @@
  */
 package org.onap.aai.graphgraph.velocity;
 
+import org.eclipse.jetty.util.StringUtil;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -48,6 +50,10 @@ public class VelocityEntity extends VelocityId {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean hasDescription() {
+        return !StringUtil.isBlank(description);
     }
 
     public String getName() {

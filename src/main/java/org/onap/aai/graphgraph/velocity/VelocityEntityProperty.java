@@ -20,15 +20,19 @@
 package org.onap.aai.graphgraph.velocity;
 
 import java.util.UUID;
+
+import org.eclipse.jetty.util.StringUtil;
 import org.onap.aai.graphgraph.dto.Property;
 
 public class VelocityEntityProperty extends Property {
 
     private final VelocityEntity entity;
     private final String propertyId;
+    private final String description;
 
-    public VelocityEntityProperty(String propertyName, String propertyValue, VelocityEntity entity) {
+    public VelocityEntityProperty(String propertyName, String propertyValue, String propertyDescription, VelocityEntity entity) {
         super(propertyName, propertyValue);
+        this.description = propertyDescription;
         this.entity = entity;
         propertyId = entity != null ? entity.getRandomId() : UUID.randomUUID().toString();
     }
@@ -41,6 +45,10 @@ public class VelocityEntityProperty extends Property {
         return entity.getName();
     }
 
+    public boolean hasDescription() {
+        return !StringUtil.isBlank(description);
+    }
+
     public boolean hasEntity() {
         return entity != null;
     }
@@ -49,8 +57,16 @@ public class VelocityEntityProperty extends Property {
         return propertyId;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public static String getRandomId() {
+        return UUID.randomUUID().toString();
+    }
+
     @Override
     public String toString() {
-        return "VelocityEntityProperty{" + " name=" + getPropertyName() + " type=" + getPropertyValue() + '}';
+        return "VelocityEntityProperty{" + " name=" + getPropertyName() + " description=" + getDescription() + " type=" + getPropertyValue() + '}';
     }
 }

@@ -52,6 +52,7 @@ import org.onap.aai.graphgraph.velocity.VelocityEntity;
 import org.onap.aai.graphgraph.velocity.VelocityEntityProperty;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.schema.enums.ObjectMetadata;
+import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.setup.SchemaVersion;
 
 public class ModelExporter {
@@ -188,6 +189,7 @@ public class ModelExporter {
                 .map(p -> new VelocityEntityProperty(
                         p,
                         introspector.getType(p),
+                        introspector.getPropertyMetadata(p).get(PropertyMetadata.DESCRIPTION),
                         findVelocityEntity(introspector.getType(p), entityList)))
                 .collect(
                         Collectors.toSet());
@@ -206,9 +208,9 @@ public class ModelExporter {
             Multimap<String, EdgeRule> edgeRules) {
         return edgeRules.values().stream().flatMap(er -> {
             VelocityAssociation out = createVelocityAssociation(entities, er.getFrom(), er.getTo(),
-                    er.getLabel(), er.getMultiplicityRule().name(), er.getContains());
+                    er.getLabel(), er.getDescription(), er.getMultiplicityRule().name(), er.getContains());
             VelocityAssociation in = createVelocityAssociation(entities, er.getTo(), er.getFrom(),
-                    er.getLabel(), er.getMultiplicityRule().name(), er.getContains());
+                    er.getLabel(), er.getDescription(), er.getMultiplicityRule().name(), er.getContains());
             switch (er.getDirection()) {
                 case OUT:
                     return Stream.of(out);
@@ -223,7 +225,7 @@ public class ModelExporter {
     }
 
     private static VelocityAssociation createVelocityAssociation(
-            Set<VelocityEntity> entities, String from, String to, String label, String multiplicity, String contains) {
+            Set<VelocityEntity> entities, String from, String to, String label, String description, String multiplicity, String contains) {
         Optional<VelocityEntity> fromEntity = entities.stream()
                 .filter(ent -> ent.getName().equals(from)).findFirst();
         Optional<VelocityEntity> toEntity = entities.stream()
@@ -235,6 +237,7 @@ public class ModelExporter {
                             fromEntity.get(),
                             toEntity.get(),
                             String.format("%s - %s (%s)", from, to, shortenLabel(label)),
+                            description,
                             multiplicity,
                             true);
                 case "OUT":
@@ -242,6 +245,7 @@ public class ModelExporter {
                             toEntity.get(),
                             fromEntity.get(),
                             String.format("%s - %s (%s)", to, from, shortenLabel(label)),
+                            description,
                             multiplicity.equals("ONE2MANY") ? "MANY2ONE" : multiplicity,
                             true);
                 default:
@@ -249,6 +253,7 @@ public class ModelExporter {
                             fromEntity.get(),
                             toEntity.get(),
                             String.format("%s - %s (%s)", from, to, shortenLabel(label)),
+                            description,
                             multiplicity,
                             false);
             }
