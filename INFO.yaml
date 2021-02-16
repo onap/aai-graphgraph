@@ -51,6 +51,11 @@ committers:
       id: 'jimmydot'
       company: 'ATT'
       timezone: 'America/Detroit'
+    - name: 'Igor Dysko'
+      email: 'dysko@objectify.sk'
+      company: 'Orange'
+      id: 'igor.dysko.orange'
+      timezone: 'Europe/Warsaw'
 tsc:
     approval: 'https://lists.onap.org/g/onap-tsc'
     changes:
@@ -63,3 +68,6 @@ tsc:
         - type: 'Addition'
           name: 'William Reehil'
           link: 'https://lists.onap.org/g/onap-tsc/message/6506'
+        - type: 'Addition'
+          name: 'Igor Dysko'
+          link: 'https://lists.onap.org/g/onap-tsc/message/7517'
