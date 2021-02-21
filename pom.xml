@@ -32,9 +32,16 @@
     <sonar.javascript.lcov.reportPaths>${project.basedir}/graphgraph-fe/coverage/lcov.info</sonar.javascript.lcov.reportPaths>
     <sonar.nodejs.executable>${project.basedir}/graphgraph-fe/node/node</sonar.nodejs.executable>
     <sonar.sources>${project.basedir}/src/main/java,${project.basedir}/graphgraph-fe/src</sonar.sources>
+    <sonar.exclusions>graphgraph-fe/src/*.test.js</sonar.exclusions>
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>2.23.4</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>javax.jms</groupId>
       <artifactId>javax.jms-api</artifactId>
@@ -59,6 +66,21 @@
       <artifactId>spring-boot-starter-jetty</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.mockito</groupId>
+          <artifactId>mockito-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.skyscreamer</groupId>
+          <artifactId>jsonassert</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>org.eclipse.persistence</groupId>
       <artifactId>eclipselink</artifactId>
       <version>2.7.7</version>
@@ -76,6 +98,10 @@
         <exclusion>
           <groupId>org.eclipse.persistence</groupId>
           <artifactId>eclipselink</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.powermock</groupId>
+          <artifactId>powermock-api-mockito</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
