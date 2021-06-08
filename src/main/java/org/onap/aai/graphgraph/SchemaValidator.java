@@ -21,29 +21,37 @@ package org.onap.aai.graphgraph;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
+import org.onap.aai.edges.EdgeIngestor;
+import org.onap.aai.graphgraph.dto.Edge;
+import org.onap.aai.graphgraph.dto.Graph;
+import org.onap.aai.graphgraph.dto.ValidationProblems;
+import org.onap.aai.graphgraph.reader.BasicSchemaReader;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.onap.aai.graphgraph.dto.Edge;
-import org.onap.aai.graphgraph.dto.Graph;
-import org.onap.aai.graphgraph.dto.ValidationProblems;
-import org.onap.aai.graphgraph.reader.BasicSchemaReader;
 
+@Service
 public class SchemaValidator {
 
-    private Graph edgerules;
-    private Graph oxm;
+    @Autowired
+    private MoxyLoaderRepository moxyLoaderRepository;
+
+    @Autowired
+    private EdgeIngestor edgeIngestor;
 
     public ValidationProblems validate(String schemaVersion) {
         ValidationProblems validationProblems = new ValidationProblems();
-        BasicSchemaReader schema = new BasicSchemaReader(schemaVersion);
-        oxm = schema.getGraph("all", 0, 0, 0, "Parents");
-        edgerules = schema.getGraph("all", 0, 0, 0, "Edgerules");
+        BasicSchemaReader schema = new BasicSchemaReader(schemaVersion, moxyLoaderRepository, edgeIngestor);
+        Graph oxm = schema.getGraph("all", 0, 0, 0, "Parents");
+        Graph edgerules = schema.getGraph("all", 0, 0, 0, "Edgerules");
 
-        checkIfDanglingEdgerules(validationProblems);
-        checkIfObsoleteOxm(validationProblems);
+        checkIfDanglingEdgerules(validationProblems, edgerules, oxm);
+        checkIfObsoleteOxm(validationProblems, edgerules, oxm);
         schema.getSchemaErrors().forEach(validationProblems::addProblem);
         return validationProblems;
     }
@@ -52,9 +60,9 @@ public class SchemaValidator {
      * computes nodes connected to relationship-list but not used in edgerules
      * @param validationProblems
      */
-    private void checkIfObsoleteOxm(ValidationProblems validationProblems) {
-        Set<String> relationshipListConnected = getAllNodesConnectedToRelationshipList();
-        Set<String> nodesInEdgerules = getEdgerulePairs().stream()
+    private void checkIfObsoleteOxm(ValidationProblems validationProblems, Graph edgerules, Graph oxm) {
+        Set<String> relationshipListConnected = getAllNodesConnectedToRelationshipList(oxm);
+        Set<String> nodesInEdgerules = getEdgerulePairs(edgerules).stream()
                 .flatMap(p -> Stream.of(p._1, p._2))
                 .collect(Collectors.toSet());
         relationshipListConnected.removeAll(nodesInEdgerules);
@@ -63,7 +71,7 @@ public class SchemaValidator {
                         n)));
     }
 
-    private Set<Tuple2<String, String>> getEdgerulePairs() {
+    private Set<Tuple2<String, String>> getEdgerulePairs(Graph edgerules) {
         return edgerules.getEdges().stream()
                 .map(e -> Tuple.of(e.getSource(), e.getTarget()))
                 .collect(Collectors.toSet());
@@ -73,24 +81,24 @@ public class SchemaValidator {
      * computes edgerules which don't have the necessary connection to relationship-list in OXM
      * @param validationProblems
      */
-    private void checkIfDanglingEdgerules(ValidationProblems validationProblems) {
-        Set<Tuple2<String, String>> edgerulePairs = getEdgerulePairs();
-        edgerulePairs.removeAll(getOxmPairs());
+    private void checkIfDanglingEdgerules(ValidationProblems validationProblems, Graph edgerules, Graph oxm) {
+        Set<Tuple2<String, String>> edgerulePairs = getEdgerulePairs(edgerules);
+        edgerulePairs.removeAll(getOxmPairs(oxm));
         edgerulePairs.forEach(erp -> validationProblems.addProblem(
                         String.format("%s and %s are associated in edgerules but not in OXM (via relationship-list)",
                                 erp._1, erp._2)));
     }
 
-    private Set<Tuple2<String, String>> getOxmPairs() {
+    private Set<Tuple2<String, String>> getOxmPairs(Graph oxm) {
         Set<Tuple2<String, String>> pairs = new HashSet<>();
-        Set<String> inRelationshipList = getAllNodesConnectedToRelationshipList();
+        Set<String> inRelationshipList = getAllNodesConnectedToRelationshipList(oxm);
 
         inRelationshipList.forEach(edge1 -> inRelationshipList
                 .forEach(edge2 -> pairs.add(Tuple.of(edge1, edge2))));
         return pairs;
     }
 
-    private Set<String> getAllNodesConnectedToRelationshipList() {
+    private Set<String> getAllNodesConnectedToRelationshipList(Graph oxm) {
         List<Edge> edges = oxm.getEdges();
         Set<String> inRelationshipList = edges.stream()
                 .filter(e -> e.getSource().equals("relationship-list"))

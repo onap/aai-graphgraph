@@ -54,10 +54,12 @@ public class SchemaResourceTest {
     @Autowired
     private EdgeIngestor edgeIngestor;
 
+    @Autowired
+    private MoxyLoaderRepository moxyLoaderRepository;
+
     @Before
     public void setUp() {
-        App.moxyLoaders.put("v10", new MoxyLoader(new SchemaVersion("v10"), nodeIngestor));
-        App.edgeIngestor = edgeIngestor;
+        moxyLoaderRepository.getMoxyLoaders().put("v10", new MoxyLoader(new SchemaVersion("v10"), nodeIngestor));
     }
 
     @Test

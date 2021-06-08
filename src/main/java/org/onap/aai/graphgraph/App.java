@@ -19,44 +19,20 @@
  */
 package org.onap.aai.graphgraph;
 
-import static org.onap.aai.graphgraph.ModelExporter.exportModel;
-import static org.onap.aai.graphgraph.ModelExporter.writeExportedModel;
+import org.apache.commons.io.FileUtils;
+import org.onap.aai.restclient.PropertyPasswordConfiguration;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
-import org.apache.commons.io.FileUtils;
-import org.onap.aai.edges.EdgeIngestor;
-import org.onap.aai.introspection.MoxyLoader;
-import org.onap.aai.nodes.NodeIngestor;
-import org.onap.aai.restclient.PropertyPasswordConfiguration;
-import org.onap.aai.setup.SchemaVersion;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
 public class App {
-
-    public static EdgeIngestor edgeIngestor;
-    public static Map<String, MoxyLoader> moxyLoaders = new HashMap<>();
-
-    // TODO
-    // this should be used properly within Spring as this is a 'static' workaround due
-    // to some initialization issues. By all means feel free to improve and move it to Spring
-    public static void loadSchemes(ConfigurableApplicationContext context) {
-        String version;
-        for (int i = 10; i <= 20; i++) {
-            version = "v" + i;
-            moxyLoaders.put(version, new MoxyLoader(
-                    new SchemaVersion(version), (NodeIngestor) context.getBean("nodeIngestor"))
-            );
-        }
-    }
 
     public static void main(String[] args) throws IOException {
         ArgumentParser parser = new ArgumentParser().parseArguments(args);
@@ -71,16 +47,15 @@ public class App {
         if (parser.isRunLocally()) {
             copyKeystore(app);
         }
-
         app.addInitializers(new PropertyPasswordConfiguration());
-        ConfigurableApplicationContext context = app.run(args);
-        loadSchemes(context);
-        edgeIngestor = (EdgeIngestor) context.getBean("edgeIngestor");
 
+        ConfigurableApplicationContext context = app.run(args);
         if (parser.shouldGenerateUrl()) {
-            writeExportedModel(exportModel(parser.getSchemaVersion()));
-            System.exit(0);
+            ModelExporter modelExporter = context.getBean(ModelExporter.class);
+            modelExporter.writeExportedModel(modelExporter.exportModel(parser.getSchemaVersion()));
+            SpringApplication.exit(context);
         }
+
     }
 
     private static void copyKeystore(SpringApplication app) throws IOException {

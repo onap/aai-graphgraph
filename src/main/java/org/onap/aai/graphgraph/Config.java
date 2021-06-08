@@ -19,14 +19,18 @@
  */
 package org.onap.aai.graphgraph;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
+import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.graphgraph.reader.BasicSchemaReader;
 import org.onap.aai.graphgraph.reader.SchemaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Configuration
 @ComponentScan(basePackages = {
@@ -39,12 +43,23 @@ public class Config {
     @Value("${schema.version.list}")
     String schemaVersions;
 
+    @Autowired
+    private MoxyLoaderRepository moxyLoaderRepository;
+
+    @Autowired
+    private EdgeIngestor edgeIngestor;
+
     @Bean
     SchemaRepository createSchemaRepository() {
         return new SchemaRepository(
                 Arrays.stream(schemaVersions.split(","))
-                        .map(BasicSchemaReader::new)
+                        .map(version -> new BasicSchemaReader(version, moxyLoaderRepository, edgeIngestor))
                         .collect(Collectors.toList())
         );
     }
+
+    public List<String> getSchemaVersions() {
+        return Arrays.asList(schemaVersions.split(","));
+    }
+
 }

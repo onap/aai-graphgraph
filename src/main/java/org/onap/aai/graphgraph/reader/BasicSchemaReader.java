@@ -40,7 +40,7 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.edges.EdgeRule;
 import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
-import org.onap.aai.graphgraph.App;
+import org.onap.aai.graphgraph.MoxyLoaderRepository;
 import org.onap.aai.graphgraph.dto.Edge;
 import org.onap.aai.graphgraph.dto.NodeName;
 import org.onap.aai.graphgraph.dto.NodeProperty;
@@ -56,22 +56,31 @@ public class BasicSchemaReader implements SchemaReader {
     private EdgeIngestor edgeIngestor;
     private final String version;
     private final List<String> schemaErrors = new LinkedList<>();
+    private final MoxyLoaderRepository moxyLoaderRepository;
 
-    public BasicSchemaReader(String version) {
+    public BasicSchemaReader(String version, MoxyLoaderRepository moxyLoaderRepository, EdgeIngestor edgeIngestor) {
         this.version = version;
+        this.moxyLoaderRepository = moxyLoaderRepository;
+        this.edgeIngestor = edgeIngestor;
     }
 
     public List<String> getSchemaErrors() {
         return schemaErrors;
     }
 
-    private void init() {
+    private void initAllEntitiesAndCreateGraph() {
         if (allEntities != null) {
             return;
         }
-        allEntities = App.moxyLoaders.get(getSchemaName()).getAllObjects();
-        edgeIngestor = App.edgeIngestor;
-        graph = createGraph(true, true);
+
+        try {
+            allEntities = moxyLoaderRepository.getMoxyLoaders().get(getSchemaName()).getAllObjects();
+            graph = createGraph(true, true);
+
+        } catch (Exception e) {
+            System.out.println("Failed creation of BasicSchemaReader, version: " + getSchemaName());
+            e.printStackTrace();
+        }
     }
 
     private Graph<String, MetadataEdge> createGraph(boolean withParentChild, boolean withEdgeRules) {
@@ -154,7 +163,7 @@ public class BasicSchemaReader implements SchemaReader {
 
     @Override
     public List<NodeName> getAllVertexNames(String edgeFilter) {
-        init();
+        initAllEntitiesAndCreateGraph();
 
         return createGraph(
                 isParentChildFilter(edgeFilter),
@@ -167,8 +176,7 @@ public class BasicSchemaReader implements SchemaReader {
 
     @Override
     public List<NodeProperty> getVertexProperties(String nodeName) {
-        init();
-
+        initAllEntitiesAndCreateGraph();
         if (!allEntities.containsKey(nodeName)) {
             return Collections.emptyList();
         }
@@ -189,7 +197,7 @@ public class BasicSchemaReader implements SchemaReader {
 
     @Override
     public List<Property> getEdgeProperties(String fromNode, String toNode, String type) {
-        init();
+        initAllEntitiesAndCreateGraph();
         if (type.equals(EdgeType.EDGE_RULE.getTypeName())) {
             try {
                 List<EdgeRule> rules = edgeIngestor.getAllRules(new SchemaVersion(getSchemaName()))
@@ -240,7 +248,7 @@ public class BasicSchemaReader implements SchemaReader {
     @Override
     public org.onap.aai.graphgraph.dto.Graph getGraph(
             String initialNode, int parentHops, int cousinHops, int childHops, String edgeFilter) {
-        init();
+        initAllEntitiesAndCreateGraph();
 
         Optional<String> anyVertex = graph.vertexSet().stream().findFirst();
         if (!anyVertex.isPresent()) {
@@ -352,7 +360,7 @@ public class BasicSchemaReader implements SchemaReader {
 
     @Override
     public org.onap.aai.graphgraph.dto.Graph getGraph(String fromNode, String toNode, String edgeFilter) {
-        init();
+        initAllEntitiesAndCreateGraph();
         Graph<String, MetadataEdge> tempGraph = createGraph(
                 isParentChildFilter(edgeFilter), isEdgeRulesFilter(edgeFilter));
         List<List<NodeName>> paths = new LinkedList<>();
