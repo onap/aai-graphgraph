@@ -41,6 +41,8 @@ import org.onap.aai.introspection.Introspector;
 import org.onap.aai.schema.enums.ObjectMetadata;
 import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.setup.SchemaVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -61,7 +63,8 @@ public class ModelExporter {
     private static final String VELOCITY_TEMPLATE_FILENAME = "model_export.vm";
     private static final boolean OXM_ENABLED = false;
     private static final String camelCaseRegex = "(?=[A-Z][a-z])";
-    private Map<String, Introspector> allEntities;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelExporter.class);
 
     @Autowired
     private MoxyLoaderRepository moxyLoaderRepository;
@@ -72,13 +75,14 @@ public class ModelExporter {
     private Multimap<String, EdgeRule> getEdgeRules(String schemaVersion) {
         try {
             Multimap<String, EdgeRule> allRules = edgeIngestor.getAllRules(new SchemaVersion(schemaVersion));
-            allEntities = moxyLoaderRepository.getMoxyLoaders().get(schemaVersion).getAllObjects();
             if (OXM_ENABLED) {
+                Map<String, Introspector> allEntities = moxyLoaderRepository.getMoxyLoaders().get(schemaVersion).getAllObjects();
                 addOxmRelationships(allRules, allEntities);
             }
             return allRules;
+
         } catch (EdgeRuleNotFoundException e) {
-            e.printStackTrace();
+            LOGGER.error("Getting edge rules failed", e);
         }
 
         return null;
@@ -132,7 +136,7 @@ public class ModelExporter {
             fw.write(result);
             fw.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Writing exported model failed", e);
         }
     }
 
@@ -170,7 +174,7 @@ public class ModelExporter {
                     .filter(a -> a.getFromEntityId().equals(e.getId())).collect(
                             Collectors.toList());
             updateNeighbour(entityList, associations);
-            String description = allEntities.get(e.getName()).getMetadata(ObjectMetadata.DESCRIPTION);
+            String description = allObjects.get(e.getName()).getMetadata(ObjectMetadata.DESCRIPTION);
             e.setDescription(StringUtil.isBlank(description) ? "no description is available" : description);
         });
 
