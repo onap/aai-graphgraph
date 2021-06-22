@@ -28,11 +28,7 @@ public class MetadataEdge extends DefaultEdge {
     private final String source;
     private final String label;
 
-    MetadataEdge(String type, String target, String source) {
-        this(type, source, target, "");
-    }
-
-    MetadataEdge(String type, String target, String source, String label) {
+    public MetadataEdge(String type, String target, String source, String label) {
         this.type = type;
         this.target = target;
         this.source = source;

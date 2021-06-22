@@ -20,19 +20,6 @@
 package org.onap.aai.graphgraph.reader;
 
 import com.google.common.collect.Multimap;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.FloydWarshallShortestPaths;
@@ -48,8 +35,18 @@ import org.onap.aai.graphgraph.dto.Property;
 import org.onap.aai.introspection.Introspector;
 import org.onap.aai.schema.enums.PropertyMetadata;
 import org.onap.aai.setup.SchemaVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class BasicSchemaReader implements SchemaReader {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(BasicSchemaReader.class);
 
     private Map<String, Introspector> allEntities;
     private Graph<String, MetadataEdge> graph = new DefaultDirectedGraph<>(MetadataEdge.class);
@@ -78,35 +75,35 @@ public class BasicSchemaReader implements SchemaReader {
             graph = createGraph(true, true);
 
         } catch (Exception e) {
-            System.out.println("Failed creation of BasicSchemaReader, version: " + getSchemaName());
-            e.printStackTrace();
+            LOGGER.error("Failed creation of BasicSchemaReader, version: " + getSchemaName(), e);
         }
     }
 
     private Graph<String, MetadataEdge> createGraph(boolean withParentChild, boolean withEdgeRules) {
-        Graph<String, MetadataEdge> graph = new DefaultDirectedGraph<>(MetadataEdge.class);
+        Graph<String, MetadataEdge> directedGraph = new DefaultDirectedGraph<>(MetadataEdge.class);
         for (Entry<String, Introspector> currentParent : allEntities.entrySet()) {
-            graph.addVertex(currentParent.getKey());
+            directedGraph.addVertex(currentParent.getKey());
             currentParent.getValue().getProperties().stream()
                     .filter(v -> allEntities.containsKey(v))
                     .filter(v -> !currentParent.getKey().equals(v))
                     .forEach(v -> {
-                        graph.addVertex(v);
+                        directedGraph.addVertex(v);
                         if (withParentChild) {
-                            addParentChildEdge(currentParent.getKey(), v, graph);
+                            addParentChildEdge(currentParent.getKey(), v, directedGraph);
                         }
                     });
         }
 
         if (!withEdgeRules) {
-            return graph;
+            return directedGraph;
         }
 
         Multimap<String, EdgeRule> allRules = null;
         try {
             allRules = edgeIngestor.getAllRules(new SchemaVersion(getSchemaName()));
+
         } catch (EdgeRuleNotFoundException e) {
-            //TODO fix
+            LOGGER.error("Edge rule not found", e);
         }
 
         Objects.requireNonNull(allRules).asMap().values().stream()
@@ -114,19 +111,19 @@ public class BasicSchemaReader implements SchemaReader {
                 .forEach(e -> {
                     switch (e.getDirection()) {
                         case OUT:
-                            addEdgerule(e.getFrom(), e.getTo(), e.getLabel(), graph);
+                            addEdgerule(e.getFrom(), e.getTo(), e.getLabel(), directedGraph);
                             break;
                         case IN:
-                            addEdgerule(e.getTo(), e.getFrom(), e.getLabel(), graph);
+                            addEdgerule(e.getTo(), e.getFrom(), e.getLabel(), directedGraph);
                             break;
                         case BOTH:
-                            addEdgerule(e.getFrom(), e.getTo(), e.getLabel(), graph);
-                            addEdgerule(e.getTo(), e.getFrom(), e.getLabel(), graph);
+                            addEdgerule(e.getFrom(), e.getTo(), e.getLabel(), directedGraph);
+                            addEdgerule(e.getTo(), e.getFrom(), e.getLabel(), directedGraph);
                             break;
                     }
                 });
 
-        return graph;
+        return directedGraph;
     }
 
     private void addEdgerule(String parent, String child, String label, Graph<String, MetadataEdge> graph) {
@@ -210,7 +207,7 @@ public class BasicSchemaReader implements SchemaReader {
                 return properties.orElse(Collections.emptyList());
 
             } catch (EdgeRuleNotFoundException e) {
-                //TODO fix
+                LOGGER.error("Edge rule not found", e);
             }
         }
         return Collections.emptyList();

@@ -20,7 +20,7 @@
 
 import React from 'react';
 import GraphSettings from './graph_settings.js';
-import { Navbar, Nav } from 'react-bootstrap';
+import { Navbar } from 'react-bootstrap';
 import './graph_settings_menu.css';
 
 class GraphSettingsMenu extends React.Component {

@@ -62,7 +62,8 @@ public class ModelExporter {
     private static final String AAIMODEL_UML_FILENAME = "aaimodel.uml";
     private static final String VELOCITY_TEMPLATE_FILENAME = "model_export.vm";
     private static final boolean OXM_ENABLED = false;
-    private static final String camelCaseRegex = "(?=[A-Z][a-z])";
+    private static final String CAMEL_CASE_REGEX = "(?=[A-Z][a-z])";
+    private static final String VELOCITY_ASSOCIATION_NAME_FORMAT = "%s - %s (%s)";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelExporter.class);
 
@@ -109,7 +110,7 @@ public class ModelExporter {
         Map<String, String> edgeRuleProps = new HashMap<>();
         edgeRuleProps.put(EdgeField.FROM.toString(), child);
         edgeRuleProps.put(EdgeField.TO.toString(), parent);
-        edgeRuleProps.put(EdgeField.DIRECTION.toString(), Direction.OUT.toString()); //TODO check direction
+        edgeRuleProps.put(EdgeField.DIRECTION.toString(), Direction.OUT.toString());
         edgeRuleProps.put(EdgeField.LABEL.toString(), "OXM Parent-Child");
         edgeRuleProps.put(EdgeField.MULTIPLICITY.toString(), MultiplicityRule.MANY2ONE.toString());
         edgeRuleProps.put(EdgeField.DEFAULT.toString(), Boolean.toString(false));
@@ -131,10 +132,8 @@ public class ModelExporter {
     }
 
     public void writeExportedModel(String result) {
-        try {
-            FileWriter fw = new FileWriter(AAIMODEL_UML_FILENAME);
+        try (FileWriter fw = new FileWriter(AAIMODEL_UML_FILENAME)) {
             fw.write(result);
-            fw.close();
         } catch (IOException e) {
             LOGGER.error("Writing exported model failed", e);
         }
@@ -246,7 +245,7 @@ public class ModelExporter {
                     return new VelocityAssociation(
                             fromEntity.get(),
                             toEntity.get(),
-                            String.format("%s - %s (%s)", from, to, shortenLabel(label)),
+                            String.format(VELOCITY_ASSOCIATION_NAME_FORMAT, from, to, shortenLabel(label)),
                             description,
                             multiplicity,
                             true);
@@ -254,7 +253,7 @@ public class ModelExporter {
                     return new VelocityAssociation(
                             toEntity.get(),
                             fromEntity.get(),
-                            String.format("%s - %s (%s)", to, from, shortenLabel(label)),
+                            String.format(VELOCITY_ASSOCIATION_NAME_FORMAT, to, from, shortenLabel(label)),
                             description,
                             multiplicity.equals("ONE2MANY") ? "MANY2ONE" : multiplicity,
                             true);
@@ -262,7 +261,7 @@ public class ModelExporter {
                     return new VelocityAssociation(
                             fromEntity.get(),
                             toEntity.get(),
-                            String.format("%s - %s (%s)", from, to, shortenLabel(label)),
+                            String.format(VELOCITY_ASSOCIATION_NAME_FORMAT, from, to, shortenLabel(label)),
                             description,
                             multiplicity,
                             false);
@@ -291,7 +290,7 @@ public class ModelExporter {
 
         String[] split = entityName.split("\\.");
         String entityNameRoot = split[split.length - 1];
-        final Pattern pattern = Pattern.compile(camelCaseRegex);
+        final Pattern pattern = Pattern.compile(CAMEL_CASE_REGEX);
         final Matcher matcher = pattern.matcher(entityNameRoot.substring(1));
         String finalEntityNameRoot = (entityNameRoot.charAt(0) + matcher.replaceAll("-")).toLowerCase();
         return entities.stream().filter(e -> e.getName().equals(finalEntityNameRoot)).findFirst().orElse(null);

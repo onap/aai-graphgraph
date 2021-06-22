@@ -39,7 +39,7 @@ public class MoxyLoaderRepository {
     @Autowired
     private NodeIngestor nodeIngestor;
 
-    public Map<String, MoxyLoader> moxyLoaders = new HashMap<>();
+    private Map<String, MoxyLoader> moxyLoaders = new HashMap<>();
 
     public Map<String, MoxyLoader> getMoxyLoaders() {
         return moxyLoaders;

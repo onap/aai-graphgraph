@@ -41,26 +41,26 @@ public class SchemaResource {
     @Autowired
     private SchemaValidator schemaValidator;
 
-    @RequestMapping("/schemas")
+    @GetMapping("/schemas")
     public List<String> loadSchemaNames() {
         return schemaRepository.getAllSchemaNames();
     }
 
-    @RequestMapping("/schemas/{schema}/nodes")
+    @GetMapping("/schemas/{schema}/nodes")
     public List<NodeName> loadVertexNames(
             @PathVariable("schema") String schemaName,
             @RequestParam("edgeFilter") String edgeFilter) {
         return schemaRepository.getSchemaReader(schemaName).getAllVertexNames(edgeFilter);
     }
 
-    @RequestMapping("/schemas/{schema}/nodes/{node}")
+    @GetMapping("/schemas/{schema}/nodes/{node}")
     public List<NodeProperty> loadProperties(
             @PathVariable("schema") String schemaName,
             @PathVariable("node") String node) {
         return schemaRepository.getSchemaReader(schemaName).getVertexProperties(node);
     }
 
-    @RequestMapping("/schemas/{schema}/edges")
+    @GetMapping("/schemas/{schema}/edges")
     public List<Property> loadEdgeProperties(
             @PathVariable("schema") String schemaName,
             @RequestParam("fromNode") String fromNodeName,
@@ -68,7 +68,7 @@ public class SchemaResource {
         return schemaRepository.getSchemaReader(schemaName).getEdgeProperties(fromNodeName, toNodeName, "edgerule");
     }
 
-    @RequestMapping("/schemas/{schema}/graph/basic")
+    @GetMapping("/schemas/{schema}/graph/basic")
     public Graph loadGraph(
             @PathVariable("schema") String schemaName,
             @RequestParam("node") String initialNodeName,
@@ -82,7 +82,7 @@ public class SchemaResource {
         return graph;
     }
 
-    @RequestMapping("/schemas/{schema}/graph/paths")
+    @GetMapping("/schemas/{schema}/graph/paths")
     public Graph loadGraphWithPaths(
             @PathVariable("schema") String schemaName,
             @RequestParam("fromNode") String fromNode,
@@ -91,13 +91,13 @@ public class SchemaResource {
         return schemaRepository.getSchemaReader(schemaName).getGraph(fromNode, toNode, edgeFilter);
     }
 
-    @RequestMapping("/schemas/{schema}/validation")
+    @GetMapping("/schemas/{schema}/validation")
     public ValidationProblems validateSchema(
             @PathVariable("schema") String schemaName) {
         return schemaValidator.validate(schemaName);
     }
 
-    @RequestMapping(value = "/schemas/{schema}/xmiexport", produces = MediaType.TEXT_XML_VALUE)
+    @GetMapping(value = "/schemas/{schema}/xmiexport", produces = MediaType.TEXT_XML_VALUE)
     @ResponseBody
     public String exportSchema(
             @PathVariable("schema") String schemaName) {

@@ -19,10 +19,10 @@
  */
 package org.onap.aai.graphgraph.velocity;
 
-import java.util.UUID;
-
 import org.eclipse.jetty.util.StringUtil;
 import org.onap.aai.graphgraph.dto.Property;
+
+import java.util.UUID;
 
 public class VelocityEntityProperty extends Property {
 
@@ -34,7 +34,7 @@ public class VelocityEntityProperty extends Property {
         super(propertyName, propertyValue);
         this.description = propertyDescription;
         this.entity = entity;
-        propertyId = entity != null ? entity.getRandomId() : UUID.randomUUID().toString();
+        propertyId = VelocityId.getRandomId();
     }
 
     public String getEntityId() {
@@ -69,4 +69,5 @@ public class VelocityEntityProperty extends Property {
     public String toString() {
         return "VelocityEntityProperty{" + " name=" + getPropertyName() + " description=" + getDescription() + " type=" + getPropertyValue() + '}';
     }
+
 }

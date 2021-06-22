@@ -22,10 +22,15 @@ package org.onap.aai.graphgraph;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ArgumentParser {
 
-    CmdLineParser parser;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ArgumentParser.class);
+
+    private CmdLineParser parser;
+
     @Option(name = "-g", usage = "generates schema model for Papyrus and exits where XY is the version",
             metaVar = "vXY")
     private String schemaVersion;
@@ -40,7 +45,7 @@ public class ArgumentParser {
         try {
             parser.parseArgument(args);
         } catch (CmdLineException e) {
-            System.err.println(e.getMessage());
+            LOGGER.error("Invalid arguments", e);
             parser.printUsage(System.err);
         }
 
