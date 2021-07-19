@@ -35,10 +35,6 @@ class ValidationModal extends React.Component {
         };
     }
 
-    renderBackdrop(props) {
-        return <div {...props} className="modal-backdrop"/>;
-    }
-
     render() {
         var problems = this.props.schemaProblems;
         var items = _.map(problems, (problem, i) => <ListGroupItem key={i}>{problem}</ListGroupItem>);

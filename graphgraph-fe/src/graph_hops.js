@@ -19,14 +19,14 @@
  */
 
 import React from 'react';
-import { Label } from 'react-bootstrap';
-import NumericInput from 'react-numeric-input';
+import { FormLabel } from 'react-bootstrap';
+import NumericInput from 'react-numeric-input2';
 import './graph_hops.css';
 
 var createNumInput = function (label, callback, current) {
     return (
             <div>
-            <Label>{label}</Label>
+            <FormLabel>{label}</FormLabel>
             <NumericInput onChange={callback} min={1} max={500} value={current} className="hops-input-field"/>
             </div>
     );

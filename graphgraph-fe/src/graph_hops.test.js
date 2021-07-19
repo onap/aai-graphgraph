@@ -22,7 +22,7 @@ import React from 'react';
 import { mount } from 'enzyme';
 
 import GraphHops from './graph_hops';
-import NumericInput from 'react-numeric-input';
+import NumericInput from 'react-numeric-input2';
 
 describe('component GraphHops', () => {
 

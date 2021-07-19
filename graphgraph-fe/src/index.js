@@ -23,7 +23,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './app.js';
 import * as serviceWorker from './service_worker.js';
-import 'bootstrap-css-only/css/bootstrap.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 ReactDOM.render(<App/>, document.getElementById('root'));
 

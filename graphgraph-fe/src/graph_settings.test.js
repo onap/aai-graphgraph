@@ -25,7 +25,7 @@ import { waitForState, waitForProps } from 'enzyme-async-helpers';
 
 import App from './app';
 import GraphSettings from './graph_settings';
-import { DropdownButton, MenuItem } from 'react-bootstrap';
+import { DropdownButton, Dropdown } from 'react-bootstrap';
 
 const baseUrl = 'http://localhost';
 // fetchMock.config.fallbackToNetwork = true;
@@ -249,7 +249,7 @@ describe('component GraphSettings', () => {
         graphSettings = app.find(GraphSettings);
 
         // 2. assert schema menu items and click on first schema 'v10'
-        let menuItems = graphSettings.find(DropdownButton).at(0).find(MenuItem).find('a');
+        let menuItems = graphSettings.find(DropdownButton).at(0).find(Dropdown.Item).find('a');
         expect( menuItems.map(menuItem => menuItem.text()) ).toEqual(testData.schemas);
         menuItems.first().simulate('click');
 
@@ -271,8 +271,9 @@ describe('component GraphSettings', () => {
         graphSettings = app.find(GraphSettings);
 
         // 2. assert source node menu items and click on 'class-of-service' option
-        let menuItems = graphSettings.find(DropdownButton).at(1).find(MenuItem).find('a');
+        let menuItems = graphSettings.find(DropdownButton).at(1).find(Dropdown.Item).find('a');
         let desiredSourceNodeItems = ['all'].concat(testData.nodes.edgerules.map(node => node.id));
+        menuItems.map(menuItem => console.log("MenuItem: " + menuItem.text()));
         expect( menuItems.map(menuItem => menuItem.text()) ).toEqual(desiredSourceNodeItems);
         menuItems.at(1).simulate('click');
 
@@ -291,7 +292,7 @@ describe('component GraphSettings', () => {
         graphSettings = app.find(GraphSettings);
 
         // 2. assert destination node menu items and click on 'allotted-resource' option
-        let menuItems = graphSettings.find(DropdownButton).at(2).find(MenuItem).find('a');
+        let menuItems = graphSettings.find(DropdownButton).at(2).find(Dropdown.Item).find('a');
         let desiredDestinationNodeItems = ['none'].concat(testData.nodes.edgerules.map(node => node.id));
         expect( menuItems.map(menuItem => menuItem.text()) ).toEqual(desiredDestinationNodeItems);
         
@@ -311,7 +312,7 @@ describe('component GraphSettings', () => {
 
         // switch back destination node to 'none'
         graphSettings.find(DropdownButton).at(2).find('button').simulate('click');
-        graphSettings.find(DropdownButton).at(2).find(MenuItem).find('a').at(0).simulate('click');
+        graphSettings.find(DropdownButton).at(2).find(Dropdown.Item).find('a').at(0).simulate('click');
         
         // wait for data load and set component state
         await waitForState(graphSettings, state => state.toNode === 'none');
@@ -328,7 +329,7 @@ describe('component GraphSettings', () => {
         graphSettings = app.find(GraphSettings);
 
         // 2. assert edge filter menu items and click on 'Parent-child (OXM structure)' option
-        let menuItems = graphSettings.find(DropdownButton).at(3).find(MenuItem).find('a');
+        let menuItems = graphSettings.find(DropdownButton).at(3).find(Dropdown.Item).find('a');
         expect( menuItems.map(menuItem => menuItem.text()) ).toEqual(testData.edgeFilter);
         menuItems.at(1).simulate('click');
 
@@ -347,7 +348,7 @@ describe('component GraphSettings', () => {
         graphSettings = app.find(GraphSettings);
 
         // 2. assert Selected Node menu items and click on 'site-pair' option
-        let menuItems = graphSettings.find(DropdownButton).at(4).find(MenuItem).find('a');
+        let menuItems = graphSettings.find(DropdownButton).at(4).find(Dropdown.Item).find('a');
         let desiredSelectedNodeItems = testData.graph.nodeNames.map(node => node.id);
         expect( menuItems.map(menuItem => menuItem.text()) ).toEqual(desiredSelectedNodeItems);
         menuItems.at(1).simulate('click');
