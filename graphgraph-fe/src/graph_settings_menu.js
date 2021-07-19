@@ -23,21 +23,17 @@ import GraphSettings from './graph_settings.js';
 import { Navbar } from 'react-bootstrap';
 import './graph_settings_menu.css';
 
-class GraphSettingsMenu extends React.Component {
-    render () {
+const GraphSettingsMenu = (props) => {
         return (
                 <Navbar className='navbar-adjust'>
-                    <Navbar.Header>
-                        <Navbar.Brand>
-                            <a href="https://gerrit.onap.org/r/gitweb?p=aai/graphgraph.git">GraphGraph</a>
-                        </Navbar.Brand>
-                    </Navbar.Header>
+                    <Navbar.Brand>
+                        <a href="https://gerrit.onap.org/r/gitweb?p=aai/graphgraph.git">GraphGraph</a>
+                    </Navbar.Brand>
                     <Navbar.Collapse className='mr-sm-2'>
-                        <GraphSettings selectedNode={this.props.selectedNode} graphData={this.props.graphData} nodePropsLoader={this.props.nodePropsLoader}/>
+                        <GraphSettings selectedNode={props.selectedNode} graphData={props.graphData} nodePropsLoader={props.nodePropsLoader}/>
                     </Navbar.Collapse>
                 </Navbar>
         );
-    }
 }
 
 export default GraphSettingsMenu;

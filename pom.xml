@@ -240,7 +240,7 @@
             <phase>generate-resources</phase>
             <configuration>
               <workingDirectory>${project.basedir}/graphgraph-fe</workingDirectory>
-              <nodeVersion>v10.10.0</nodeVersion>
+              <nodeVersion>v12.22.3</nodeVersion>
             </configuration>
           </execution>
           <execution>

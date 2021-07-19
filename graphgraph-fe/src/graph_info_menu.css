@@ -5,10 +5,6 @@
     width: 100%;
 }
 
-.pagination {
-    margin: 0 12px 0 20px !important;
-}
-
 .fixed-height-container {
     overflow: scroll;
     float:top;
@@ -43,7 +39,6 @@
 
 .path-heading {
     margin-top: 6px;
-    color: #333333;
     color: rgb(51, 51, 51);
     background-color: #000000;
     background-color: rgba(0, 0, 0, 0);
@@ -51,14 +46,14 @@
     line-height: 20px;
     vertical-align: bottom;
     letter-spacing: normal;
-    word-spacing: 0px;
+    word-spacing: 0;
     font-weight: 700;
     font-style: normal;
     font-variant: normal;
     text-transform: none;
     text-decoration: none;
     text-align: left;
-    text-indent: 0px;
+    text-indent: 0;
 }
 
 .datatable{
@@ -69,4 +64,30 @@
 .datatable .row{
     margin-right: 0;
     margin-left: 0;
+}
+
+.prop-table-wrapper {
+    padding: 0.4rem;
+}
+
+.prop-table-wrapper table {
+    border-spacing: 0;
+    border: 1px solid black;
+    width: 100%;
+}
+
+.prop-table-wrapper th,td {
+    margin: 0;
+    padding: 0.5rem;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+    line-height: 0.8rem;
+}
+
+.pagination {
+    padding: 0.5rem;
+}
+
+.pagination-controls {
+    margin: auto;
 }

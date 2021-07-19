@@ -20,7 +20,7 @@
 
 import React from 'react';
 import _ from 'underscore';
-import { DropdownButton, MenuItem, Label } from 'react-bootstrap';
+import { DropdownButton, Dropdown, FormLabel } from 'react-bootstrap';
 import './graph_settings.css';
 import Popup from './popup_settings.js';
 import ValidationModal from './validation_modal.js';
@@ -198,60 +198,76 @@ class GraphSettings extends React.Component {
     }
 
     render () {
-        var schemas = _.map(this.state.schemas, (x, k) => <MenuItem key={k} eventKey={x}>{x}</MenuItem>);
+        var schemas = _.map(this.state.schemas, (x, k) => <Dropdown.Item key={k} eventKey={x}>{x}</Dropdown.Item>);
 
-        var items = _.map(this.state.nodeNames, (x, k) => <MenuItem key={k} eventKey={x.id}>{x.id}</MenuItem>);
+        var items = _.map(this.state.nodeNames, (x, k) => <Dropdown.Item key={k} eventKey={x.id}>{x.id}</Dropdown.Item>);
         let sortedNames = _.sortBy(this.state.graph.nodeNames, 'id');
-        var currentNodeNames = _.map(sortedNames, (x, k) => <MenuItem key={k} eventKey={x.id}>{x.id}</MenuItem>);
+        var currentNodeNames = _.map(sortedNames, (x, k) => <Dropdown.Item key={k} eventKey={x.id}>{x.id}</Dropdown.Item>);
 
         var fromItems = items.slice();
-        fromItems.unshift(<MenuItem key='divider' divider/>);
-        fromItems.unshift(<MenuItem key='all' eventKey='all'>all</MenuItem>);
+        fromItems.unshift(<div className="dropdown-divider"></div>);
+        fromItems.unshift(<Dropdown.Item key='all' eventKey='all'>all</Dropdown.Item>);
 
-        items.unshift(<MenuItem key='anotherdivider' divider/>);
-        items.unshift(<MenuItem key='none' eventKey='none'>none</MenuItem>);
+        items.unshift(<div className="dropdown-divider"></div>);
+        items.unshift(<Dropdown.Item key='none' eventKey='none'>none</Dropdown.Item>);
 
         let edgeFilterItems = [
-                <MenuItem key='Edgerules' eventKey='Edgerules'>Edgerules</MenuItem>,
-                <MenuItem key='Parents' eventKey='Parents'>Parent-child (OXM structure)</MenuItem>,
+            <Dropdown.Item key='Edgerules' eventKey='Edgerules'>Edgerules</Dropdown.Item>,
+            <Dropdown.Item key='Parents' eventKey='Parents'>Parent-child (OXM structure)</Dropdown.Item>
         ];
         return (
             <div>
                 <div className="graph-menu">
                     <div className="startendnode-dropdown">
                         <div>
-                            <Label>Schemas</Label>
-                            <DropdownButton className="schemas-dropdown" onSelect={this.selectSchema} id="schemas"
-                                            title={this.state.selectedSchema}>{schemas}</DropdownButton>
+                            <FormLabel className="text-nowrap">Schemas</FormLabel>
+                            <DropdownButton onSelect={this.selectSchema}
+                                            id="schemas"
+                                            title={this.state.selectedSchema || 'Select'}>
+                                {schemas}
+                            </DropdownButton>
                         </div>
-                        <div className="source-dropdown-div">
-                            <Label>Source Node</Label>
-                            <DropdownButton className="node-dropdown" onSelect={this.onChangeStartNode} id="namesFrom"
-                                            title={this.state.fromNode}>{fromItems}</DropdownButton>
-                        </div>
-                        <div>
-                            <Label>Destination Node</Label>
-                            <DropdownButton disabled={!this.state.enableDestinationNode} className="node-dropdown"
-                                            onSelect={this.onChangeToNode} id="namesTo"
-                                            title={this.state.toNode}>{items}</DropdownButton>
-                        </div>
-                        <div className="source-dropdown-div">
-                            <Label>Edge filter</Label>
-                            <DropdownButton className="node-dropdown" onSelect={this.changeEdgeFilter} id="filterEdge"
-                                            title={this.state.edgeFilter}>{edgeFilterItems}</DropdownButton>
+                        <div className="dropdown-div">
+                            <FormLabel className="text-nowrap">Source Node</FormLabel>
+                            <DropdownButton onSelect={this.onChangeStartNode}
+                                            id="namesFrom"
+                                            title={this.state.fromNode || 'Select'}>
+                                {fromItems}
+                            </DropdownButton>
                         </div>
                         <div>
-                            <Label>Selected Node</Label>
-                            <DropdownButton className="node-dropdown" onSelect={this.onSelectNode} id="selectedNode"
-                                            title={this.props.selectedNode}>{currentNodeNames}</DropdownButton>
+                            <FormLabel className="text-nowrap">Destination Node</FormLabel>
+                            <DropdownButton disabled={!this.state.enableDestinationNode}
+                                            onSelect={this.onChangeToNode}
+                                            id="namesTo"
+                                            title={this.state.toNode || 'Select'}>
+                                {items}
+                            </DropdownButton>
+                        </div>
+                        <div className="dropdown-div">
+                            <FormLabel className="text-nowrap">Edge filter</FormLabel>
+                            <DropdownButton onSelect={this.changeEdgeFilter}
+                                            id="filterEdge"
+                                            title={this.state.edgeFilter || 'Select'}>
+                                {edgeFilterItems}
+                            </DropdownButton>
+                        </div>
+                        <div>
+                            <FormLabel className="text-nowrap">Selected Node</FormLabel>
+                            <DropdownButton onSelect={this.onSelectNode}
+                                            id="selectedNode"
+                                            title={this.props.selectedNode || 'Select'}>
+                                {currentNodeNames}
+                            </DropdownButton>
                         </div>
                         <Popup isDisabled={!this.state.showHops} edgeFilter={this.state.edgeFilter}
                                parentHops={this.state.hops.parents} childHops={this.state.hops.child}
-                               cousinHops={this.state.hops.cousin} updateHops={this.updateHops}/>
-                        <div className="modal-button">
+                               cousinHops={this.state.hops.cousin} updateHops={this.updateHops}
+                               className={"text-nowrap"}/>
+                        <div className="modal-button text-nowrap">
                             <ValidationModal schemaProblems={this.state.schemaProblems}/>
                         </div>
-                        <div className="modal-button">
+                        <div className="modal-button text-nowrap">
                             <DownloadExport schemaVersion={this.state.selectedSchema}/>
                         </div>
                     </div>
