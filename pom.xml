@@ -44,6 +44,10 @@
           <groupId>org.onap.aai.aai-common</groupId>
           <artifactId>aai-schema-ingest</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
