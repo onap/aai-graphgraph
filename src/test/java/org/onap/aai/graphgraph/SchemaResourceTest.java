@@ -23,7 +23,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.graphgraph.dto.Graph;
 import org.onap.aai.graphgraph.dto.NodeName;
 import org.onap.aai.graphgraph.dto.NodeProperty;
@@ -52,9 +51,6 @@ public class SchemaResourceTest {
     private NodeIngestor nodeIngestor;
 
     @Autowired
-    private EdgeIngestor edgeIngestor;
-
-    @Autowired
     private MoxyLoaderRepository moxyLoaderRepository;
 
     @Before
@@ -77,6 +73,20 @@ public class SchemaResourceTest {
         Assert.assertTrue(containsNodeName(graph.getNodeNames(), "subnet"));
         Assert.assertTrue(containsNodeName(graph.getNodeNames(), "cloud-region"));
         Assert.assertTrue(containsNodeName(graph.getNodeNames(), "volume-group"));
+    }
+
+    @Test
+    public void loadCloudRegionGraphTest() {
+        Graph graph = schemaResource.loadGraph("v10", "cloud-region", 1, 1, 1, "Edgerules");
+
+        Assert.assertNotNull(graph.getEdges());
+        Assert.assertEquals(14, graph.getEdges().size());
+        Assert.assertEquals(15, graph.getNodeNames().size());
+        Assert.assertTrue(containsNodeName(graph.getNodeNames(), "image"));
+        Assert.assertTrue(containsNodeName(graph.getNodeNames(), "volume-group"));
+        Assert.assertTrue(containsNodeName(graph.getNodeNames(), "zone"));
+        Assert.assertTrue(containsNodeName(graph.getNodeNames(), "dvs-switch"));
+        Assert.assertTrue(containsNodeName(graph.getNodeNames(), "tenant"));
     }
 
     @Test
@@ -108,6 +118,21 @@ public class SchemaResourceTest {
         String schemaExport = schemaResource.exportSchema("v10");
         Assert.assertNotNull(schemaExport);
         Assert.assertEquals(844919, schemaExport.length());
+    }
+
+    @Test
+    public void allVertexNamesTest() {
+        List<NodeName> nodeNames = schemaResource.loadVertexNames("v10", "Edgerules");
+        Assert.assertNotNull(nodeNames);
+        Assert.assertEquals(74, nodeNames.size());
+        Assert.assertTrue(containsNodeName(nodeNames, "connector"));
+        Assert.assertTrue(containsNodeName(nodeNames, "cvlan-tag"));
+        Assert.assertTrue(containsNodeName(nodeNames, "element-choice-set"));
+        Assert.assertTrue(containsNodeName(nodeNames, "image"));
+        Assert.assertTrue(containsNodeName(nodeNames, "model-constraint"));
+        Assert.assertTrue(containsNodeName(nodeNames, "pnf"));
+        Assert.assertTrue(containsNodeName(nodeNames, "service-capability"));
+        Assert.assertTrue(containsNodeName(nodeNames, "vlan"));
     }
 
     private boolean containsNodeProperty(List<NodeProperty> nodeProperties, String propertyName) {
