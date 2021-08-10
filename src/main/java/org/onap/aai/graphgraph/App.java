@@ -52,7 +52,8 @@ public class App {
         ConfigurableApplicationContext context = app.run(args);
         if (parser.shouldGenerateUrl()) {
             ModelExporter modelExporter = context.getBean(ModelExporter.class);
-            modelExporter.writeExportedModel(modelExporter.exportModel(parser.getSchemaVersion()));
+            String model = modelExporter.exportModel(parser.getSchemaVersion());
+            modelExporter.writeExportedModel(model);
             SpringApplication.exit(context);
         }
 

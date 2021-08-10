@@ -20,7 +20,6 @@
 package org.onap.aai.graphgraph;
 
 import com.google.common.collect.Multimap;
-import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -30,9 +29,6 @@ import org.apache.velocity.tools.generic.EscapeTool;
 import org.eclipse.jetty.util.StringUtil;
 import org.onap.aai.edges.EdgeIngestor;
 import org.onap.aai.edges.EdgeRule;
-import org.onap.aai.edges.enums.DirectionNotation;
-import org.onap.aai.edges.enums.EdgeField;
-import org.onap.aai.edges.enums.MultiplicityRule;
 import org.onap.aai.edges.exceptions.EdgeRuleNotFoundException;
 import org.onap.aai.graphgraph.velocity.VelocityAssociation;
 import org.onap.aai.graphgraph.velocity.VelocityEntity;
@@ -50,7 +46,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -61,7 +56,6 @@ public class ModelExporter {
 
     private static final String AAIMODEL_UML_FILENAME = "aaimodel.uml";
     private static final String VELOCITY_TEMPLATE_FILENAME = "model_export.vm";
-    private static final boolean OXM_ENABLED = false;
     private static final String CAMEL_CASE_REGEX = "(?=[A-Z][a-z])";
     private static final String VELOCITY_ASSOCIATION_NAME_FORMAT = "%s - %s (%s)";
 
@@ -76,10 +70,6 @@ public class ModelExporter {
     private Multimap<String, EdgeRule> getEdgeRules(String schemaVersion) {
         try {
             Multimap<String, EdgeRule> allRules = edgeIngestor.getAllRules(new SchemaVersion(schemaVersion));
-            if (OXM_ENABLED) {
-                Map<String, Introspector> allEntities = moxyLoaderRepository.getMoxyLoaders().get(schemaVersion).getAllObjects();
-                addOxmRelationships(allRules, allEntities);
-            }
             return allRules;
 
         } catch (EdgeRuleNotFoundException e) {
@@ -87,39 +77,6 @@ public class ModelExporter {
         }
 
         return null;
-    }
-
-    private void addOxmRelationships(
-            Multimap<String, EdgeRule> allRules,
-            Map<String, Introspector> allEntities) {
-
-        for (Entry<String, Introspector> currentParent : allEntities.entrySet()) {
-            currentParent.getValue().getProperties().stream()
-                    .filter(allEntities::containsKey)
-                    .filter(v -> !currentParent.getKey().equals(v))
-                    .forEach(v -> {
-                        String key = currentParent.getKey() + "|" + v;
-                        if (!allRules.containsKey(key)) {
-                            allRules.put(key, createEdgeRule(currentParent.getKey(), v));
-                        }
-                    });
-        }
-    }
-
-    private EdgeRule createEdgeRule(String parent, String child) {
-        Map<String, String> edgeRuleProps = new HashMap<>();
-        edgeRuleProps.put(EdgeField.FROM.toString(), child);
-        edgeRuleProps.put(EdgeField.TO.toString(), parent);
-        edgeRuleProps.put(EdgeField.DIRECTION.toString(), Direction.OUT.toString());
-        edgeRuleProps.put(EdgeField.LABEL.toString(), "OXM Parent-Child");
-        edgeRuleProps.put(EdgeField.MULTIPLICITY.toString(), MultiplicityRule.MANY2ONE.toString());
-        edgeRuleProps.put(EdgeField.DEFAULT.toString(), Boolean.toString(false));
-        edgeRuleProps.put(EdgeField.PRIVATE.toString(), Boolean.toString(false));
-        edgeRuleProps.put(EdgeField.DELETE_OTHER_V.toString(), DirectionNotation.DIRECTION.toString());
-        edgeRuleProps.put(EdgeField.PREVENT_DELETE.toString(), DirectionNotation.DIRECTION.toString());
-        edgeRuleProps.put(EdgeField.CONTAINS.toString(), DirectionNotation.DIRECTION.toString());
-        edgeRuleProps.put(EdgeField.DESCRIPTION.toString(), "fake edgerule representing parent-child");
-        return new EdgeRule(edgeRuleProps);
     }
 
     public String exportModel(String schemaVersion) {

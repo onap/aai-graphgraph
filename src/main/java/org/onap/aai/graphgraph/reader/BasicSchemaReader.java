@@ -46,7 +46,7 @@ import java.util.stream.Stream;
 
 public class BasicSchemaReader implements SchemaReader {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(BasicSchemaReader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BasicSchemaReader.class);
 
     private Map<String, Introspector> allEntities;
     private Graph<String, MetadataEdge> graph = new DefaultDirectedGraph<>(MetadataEdge.class);
