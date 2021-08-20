@@ -30,12 +30,16 @@ import org.onap.aai.graphgraph.dto.ValidationProblems;
 import org.onap.aai.introspection.MoxyLoader;
 import org.onap.aai.nodes.NodeIngestor;
 import org.onap.aai.setup.SchemaVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = App.class)
@@ -43,6 +47,8 @@ import java.util.List;
 @TestPropertySource(locations = "classpath:application-test.properties")
 @RunWith(SpringRunner.class)
 public class SchemaResourceTest {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SchemaResourceTest.class);
 
     @Autowired
     private SchemaResource schemaResource;
@@ -114,10 +120,25 @@ public class SchemaResourceTest {
     }
 
     @Test
-    public void exportSchemaTest() {
+    public void exportSchemaVersion10Test() {
         String schemaExport = schemaResource.exportSchema("v10");
         Assert.assertNotNull(schemaExport);
         Assert.assertEquals(844919, schemaExport.length());
+    }
+
+    @Test
+    public void exportNewestSchemaIntoFileTest() {
+        String schemaVersion = "v23";
+        String schemaExport = schemaResource.exportSchema(schemaVersion);
+
+        Assert.assertNotNull(schemaExport);
+        try (FileWriter fw = new FileWriter("aaimodel-" + schemaVersion + ".uml")) {
+            fw.write(schemaExport);
+
+        } catch (IOException e) {
+            LOGGER.error("Writing exported model failed", e);
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
