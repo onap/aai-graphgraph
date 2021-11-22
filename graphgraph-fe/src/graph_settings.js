@@ -205,10 +205,10 @@ class GraphSettings extends React.Component {
         var currentNodeNames = _.map(sortedNames, (x, k) => <Dropdown.Item key={k} eventKey={x.id}>{x.id}</Dropdown.Item>);
 
         var fromItems = items.slice();
-        fromItems.unshift(<div className="dropdown-divider"></div>);
+        fromItems.unshift(<div className="dropdown-divider" key="d1"></div>);
         fromItems.unshift(<Dropdown.Item key='all' eventKey='all'>all</Dropdown.Item>);
 
-        items.unshift(<div className="dropdown-divider"></div>);
+        items.unshift(<div className="dropdown-divider" key="d2"></div>);
         items.unshift(<Dropdown.Item key='none' eventKey='none'>none</Dropdown.Item>);
 
         let edgeFilterItems = [

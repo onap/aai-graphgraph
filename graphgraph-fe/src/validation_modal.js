@@ -41,7 +41,7 @@ class ValidationModal extends React.Component {
         return (
                 <div>
                 <Button onClick={this.open}>Validate schema</Button>
-                <Modal onHide={this.close} className="modal-validator" aria-labelledby="modal-label" show={this.state.showModal} renderBackdrop={this.renderBackdrop}>
+                <Modal onHide={this.close} className="modal-validator" aria-labelledby="modal-label" show={this.state.showModal} >
                 <div className="modal-list">
                 <ListGroup>{items}</ListGroup>
                 </div>
