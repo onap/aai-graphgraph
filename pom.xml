@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.onap.aai.aai-common</groupId>
     <artifactId>aai-parent</artifactId>
-    <version>1.8.2</version>
+    <version>1.9.2</version>
   </parent>
 
   <groupId>org.onap.aai.graphgraph</groupId>
@@ -26,7 +26,7 @@
     <docker.registry>docker.io</docker.registry>
     <docker.push.registry>localhost:5000</docker.push.registry>
     <aai.docker.namespace>onap</aai.docker.namespace>
-    <aai.common.version>1.8.2</aai.common.version>
+    <aai.common.version>1.9.2</aai.common.version>
     <aai.build.directory>${project.build.directory}/${project.artifactId}-${project.version}-build/</aai.build.directory>
     <graphgraph.startpath>src/main/resources/</graphgraph.startpath>
     <sonar.javascript.lcov.reportPaths>${project.basedir}/graphgraph-fe/coverage/lcov.info</sonar.javascript.lcov.reportPaths>
