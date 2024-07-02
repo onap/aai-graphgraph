@@ -43,7 +43,7 @@ public class TestConfig {
         Mockito.when(restClient.getGetRequest(Mockito.anyString(),
                 Mockito.eq("versions"),
                 Mockito.any(Map.class)))
-                .thenReturn(new ResponseEntity("{\"versions\":[\"v10\",\"v23\"],\"edge-version\":\"v10\",\"default-version\":\"v10\",\"depth-version\":\"v10\",\"app-root-version\":\"v10\",\"related-link-version\":\"v10\",\"namespace-change-version\":\"v10\"}", HttpStatus.OK));
+                .thenReturn(new ResponseEntity<String>("{\"versions\":[\"v10\",\"v23\"],\"edge-version\":\"v10\",\"default-version\":\"v10\",\"depth-version\":\"v10\",\"app-root-version\":\"v10\",\"related-link-version\":\"v10\",\"namespace-change-version\":\"v10\"}", HttpStatus.OK));
 
         //extend test in the future with the following versions:
         //{"versions":["v10","v11","v12","v13","v14","v15","v16","v17","v18","v19","v20","v21","v22","v23"],"edge-version":"v12","default-version":"v23","depth-version":"v10","app-root-version":"v11","related-link-version":"v10","namespace-change-version":"v12"}
@@ -75,7 +75,7 @@ public class TestConfig {
         Mockito.when(restClient.getGetRequest(Mockito.anyString(),
                 Mockito.eq("edgerules?version=" + version),
                 Mockito.any(Map.class)))
-                .thenReturn(new ResponseEntity(new String(bytes, StandardCharsets.UTF_8), HttpStatus.OK));
+                .thenReturn(new ResponseEntity<String>(new String(bytes, StandardCharsets.UTF_8), HttpStatus.OK));
     }
 
 }

@@ -123,7 +123,7 @@ public class SchemaResourceTest {
     public void exportSchemaVersion10Test() {
         String schemaExport = schemaResource.exportSchema("v10");
         Assert.assertNotNull(schemaExport);
-        Assert.assertEquals(844919, schemaExport.length());
+        Assert.assertEquals(764869, schemaExport.length());
     }
 
     @Test

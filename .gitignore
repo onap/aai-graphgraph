@@ -25,5 +25,7 @@
 # idea
 /.idea
 *.iml
+.vscode
 
 node
+*.uml
