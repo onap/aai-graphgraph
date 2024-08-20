@@ -1,0 +1,7 @@
+distribution_type: container
+container_release_tag: 1.8.3
+project: graphgraph
+ref: 0ea2dc335f2c5ec8fdb646f9f914823bea49e55c
+containers:
+    - name: aai-graphgraph
+      version: 1.8.3
